@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Sunil Sankar" /><link rel="canonical" href="https://sunilsankar.github.io/webhook-async-docs/deployment/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Deployment - webhook-async</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Deployment";
+        var mkdocs_page_input_path = "deployment.md";
+        var mkdocs_page_url = "/webhook-async-docs/deployment/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/rust.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/toml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> webhook-async
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Deployment</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#table-of-contents">Table of Contents</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#linux-bare-metal-vm-systemd">Linux Bare Metal / VM (systemd)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-create-dedicated-service-user">1. Create Dedicated Service User</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-install-binary">2. Install Binary</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-create-configuration-etcwebhook-asyncconfigtoml">3. Create Configuration (/etc/webhook-async/config.toml)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-create-systemd-unit-etcsystemdsystemwebhook-asyncservice">4. Create systemd Unit (/etc/systemd/system/webhook-async.service)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#5-enable-and-start">5. Enable and Start</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#docker-docker-compose">Docker &amp; Docker Compose</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-dockerfile">1. Dockerfile</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-docker-composeyml-with-valkey-distributed-queue">2. docker-compose.yml (With Valkey Distributed Queue)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#kubernetes">Kubernetes</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-configmap-and-secrets">1. ConfigMap and Secrets</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-receiver-deployment-service">2. Receiver Deployment &amp; Service</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#macos-launchd">macOS (launchd)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-install-binary">1. Install Binary</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-create-launchd-agent-librarylaunchagentscomsunilsankarwebhook-asyncplist">2. Create launchd Agent (~/Library/LaunchAgents/com.sunilsankar.webhook-async.plist)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-load-agent">3. Load Agent</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#windows-server-nssm">Windows Server (NSSM)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#distributed-scale-out-dedicated-workers">Distributed Scale-Out (Dedicated Workers)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#reverse-proxy-ingress-caddy-nginx">Reverse Proxy &amp; Ingress (Caddy / Nginx)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#caddy-automatic-https">Caddy (Automatic HTTPS)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#nginx">Nginx</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#direct-tls-unix-sockets">Direct TLS &amp; Unix Sockets</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../api/">REST API & OpenAPI</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../operations/">Operations & Backup</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">webhook-async</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Deployment</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/sunilsankar/webhook-async/edit/master/docs/deployment.md">Edit on sunilsankar/webhook-async</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="deployment-guide">Deployment Guide<a class="headerlink" href="#deployment-guide" title="Permanent link">&para;</a></h1>
+<p><a href="../">← Back to Home</a> • <a href="../configuration/">Configuration Reference</a> • <a href="../api/">API Reference</a> • <a href="../operations/">Operations</a></p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#linux-bare-metal-vm-systemd">Linux Bare Metal / VM (systemd)</a></li>
+<li><a href="#docker-docker-compose">Docker &amp; Docker Compose</a></li>
+<li><a href="#kubernetes">Kubernetes</a></li>
+<li><a href="#macos-launchd">macOS (launchd)</a></li>
+<li><a href="#windows-server-nssm">Windows Server (NSSM)</a></li>
+<li><a href="#distributed-scale-out-dedicated-workers">Distributed Scale-Out (Dedicated Workers)</a></li>
+<li><a href="#reverse-proxy-ingress-caddy-nginx">Reverse Proxy &amp; Ingress (Caddy / Nginx)</a></li>
+<li><a href="#direct-tls-unix-sockets">Direct TLS &amp; Unix Sockets</a></li>
+</ol>
+<hr />
+<h2 id="linux-bare-metal-vm-systemd">Linux Bare Metal / VM (systemd)<a class="headerlink" href="#linux-bare-metal-vm-systemd" title="Permanent link">&para;</a></h2>
+<p>Recommended for production Debian, Ubuntu, RHEL, Rocky, or Alpine Linux servers.</p>
+<h3 id="1-create-dedicated-service-user">1. Create Dedicated Service User<a class="headerlink" href="#1-create-dedicated-service-user" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash">sudo useradd -r -s /usr/sbin/nologin -d /var/lib/webhook-async webhook
+sudo mkdir -p /etc/webhook-async /var/lib/webhook-async /var/log/webhook-async
+sudo chown -R webhook:webhook /var/lib/webhook-async /var/log/webhook-async
+</code></pre>
+<h3 id="2-install-binary">2. Install Binary<a class="headerlink" href="#2-install-binary" title="Permanent link">&para;</a></h3>
+<p>Download from <a href="https://github.com/sunilsankar/webhook-async/releases">GitHub Releases</a>:</p>
+<pre><code class="language-bash">sudo curl -L -o /usr/local/bin/webhook-async https://github.com/sunilsankar/webhook-async/releases/download/v0.1.0-beta/webhook-async-linux-amd64
+sudo chmod +x /usr/local/bin/webhook-async
+</code></pre>
+<h3 id="3-create-configuration-etcwebhook-asyncconfigtoml">3. Create Configuration (<code>/etc/webhook-async/config.toml</code>)<a class="headerlink" href="#3-create-configuration-etcwebhook-asyncconfigtoml" title="Permanent link">&para;</a></h3>
+<pre><code class="language-toml">[server]
+host = &quot;127.0.0.1&quot;
+port = 9000
+hook_files = [&quot;/etc/webhook-async/hooks.json&quot;]
+hot_reload = true
+
+[storage]
+backend = &quot;sqlite&quot;
+
+[storage.sqlite]
+database_url = &quot;sqlite:///var/lib/webhook-async/data.db?mode=rwc&quot;
+wal_mode = true
+busy_timeout_ms = 5000
+
+[worker]
+concurrency = 4
+
+[ui]
+enabled = true
+bind = &quot;127.0.0.1:9001&quot;
+
+[auth]
+admin_token_env = &quot;WEBHOOK_ADMIN_TOKEN&quot;
+</code></pre>
+<h3 id="4-create-systemd-unit-etcsystemdsystemwebhook-asyncservice">4. Create systemd Unit (<code>/etc/systemd/system/webhook-async.service</code>)<a class="headerlink" href="#4-create-systemd-unit-etcsystemdsystemwebhook-asyncservice" title="Permanent link">&para;</a></h3>
+<pre><code class="language-ini">[Unit]
+Description=webhook-async standalone receiver and job engine
+After=network.target
+
+[Service]
+Type=simple
+User=webhook
+Group=webhook
+Environment=&quot;WEBHOOK_ADMIN_TOKEN=your-random-32-char-token-here&quot;
+ExecStart=/usr/local/bin/webhook-async server --config /etc/webhook-async/config.toml
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5s
+KillMode=mixed
+TimeoutStopSec=35s
+LimitNOFILE=65536
+
+# Sandboxing &amp; Hardening
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/webhook-async /var/log/webhook-async
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+<h3 id="5-enable-and-start">5. Enable and Start<a class="headerlink" href="#5-enable-and-start" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash">sudo systemctl daemon-reload
+sudo systemctl enable --now webhook-async
+sudo systemctl status webhook-async
+</code></pre>
+<hr />
+<h2 id="docker-docker-compose">Docker &amp; Docker Compose<a class="headerlink" href="#docker-docker-compose" title="Permanent link">&para;</a></h2>
+<h3 id="1-dockerfile">1. <code>Dockerfile</code><a class="headerlink" href="#1-dockerfile" title="Permanent link">&para;</a></h3>
+<pre><code class="language-dockerfile"># Build Stage
+FROM rust:1.89-alpine AS builder
+RUN apk add --no-cache musl-dev
+WORKDIR /build
+COPY . .
+RUN cargo build --release
+
+# Runtime Stage
+FROM alpine:3.20
+RUN apk add --no-cache bash ca-certificates curl jq git
+RUN addgroup -S webhook &amp;&amp; adduser -S webhook -G webhook
+WORKDIR /app
+COPY --from=builder /build/target/release/webhook-async /usr/local/bin/webhook-async
+RUN mkdir -p /data &amp;&amp; chown -R webhook:webhook /data
+USER webhook
+EXPOSE 9000 9001
+VOLUME [&quot;/data&quot;, &quot;/config&quot;]
+ENTRYPOINT [&quot;/usr/local/bin/webhook-async&quot;]
+CMD [&quot;server&quot;, &quot;--config&quot;, &quot;/config/config.toml&quot;]
+</code></pre>
+<h3 id="2-docker-composeyml-with-valkey-distributed-queue">2. <code>docker-compose.yml</code> (With Valkey Distributed Queue)<a class="headerlink" href="#2-docker-composeyml-with-valkey-distributed-queue" title="Permanent link">&para;</a></h3>
+<pre><code class="language-yaml">version: &quot;3.8&quot;
+
+services:
+  valkey:
+    image: valkey/valkey:8-alpine
+    restart: unless-stopped
+    command: [&quot;valkey-server&quot;, &quot;--appendonly&quot;, &quot;yes&quot;]
+    volumes:
+      - valkey-data:/data
+    networks:
+      - webhook-net
+
+  webhook-api:
+    image: ghcr.io/sunilsankar/webhook-async:v0.1.0-beta
+    restart: unless-stopped
+    command: [&quot;server&quot;, &quot;--config&quot;, &quot;/config/config.toml&quot;, &quot;--async&quot;]
+    ports:
+      - &quot;9000:9000&quot;
+      - &quot;127.0.0.1:9001:9001&quot;
+    environment:
+      - WEBHOOK_ADMIN_TOKEN=super-secure-admin-token
+    volumes:
+      - ./config:/config:ro
+      - ./scripts:/scripts:ro
+    depends_on:
+      - valkey
+    networks:
+      - webhook-net
+
+  webhook-worker:
+    image: ghcr.io/sunilsankar/webhook-async:v0.1.0-beta
+    restart: unless-stopped
+    command: [&quot;worker&quot;, &quot;--config&quot;, &quot;/config/config.toml&quot;]
+    environment:
+      - WEBHOOK_ADMIN_TOKEN=super-secure-admin-token
+    volumes:
+      - ./config:/config:ro
+      - ./scripts:/scripts
+    depends_on:
+      - valkey
+    networks:
+      - webhook-net
+
+volumes:
+  valkey-data:
+
+networks:
+  webhook-net:
+    driver: bridge
+</code></pre>
+<hr />
+<h2 id="kubernetes">Kubernetes<a class="headerlink" href="#kubernetes" title="Permanent link">&para;</a></h2>
+<p>Deploy <code>webhook-async</code> with decoupled HTTP ingress pods and dedicated worker pods.</p>
+<h3 id="1-configmap-and-secrets">1. ConfigMap and Secrets<a class="headerlink" href="#1-configmap-and-secrets" title="Permanent link">&para;</a></h3>
+<pre><code class="language-yaml">apiVersion: v1
+kind: Secret
+metadata:
+  name: webhook-secrets
+type: Opaque
+stringData:
+  admin-token: &quot;generate-a-strong-secret-token&quot;
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webhook-config
+data:
+  config.toml: |
+    [server]
+    host = &quot;0.0.0.0&quot;
+    port = 9000
+    hook_files = [&quot;/etc/webhook/hooks.json&quot;]
+
+    [storage]
+    backend = &quot;valkey&quot;
+    [storage.valkey]
+    url = &quot;redis://valkey-cluster:6379/0&quot;
+    key_prefix = &quot;k8s_webhook:&quot;
+
+    [worker]
+    concurrency = 8
+    shutdown_grace_seconds = 30
+
+    [auth]
+    admin_token_env = &quot;WEBHOOK_ADMIN_TOKEN&quot;
+
+  hooks.json: |
+    [
+      {
+        &quot;id&quot;: &quot;ci-deploy&quot;,
+        &quot;execute-command&quot;: &quot;/scripts/deploy.sh&quot;,
+        &quot;async&quot;: true
+      }
+    ]
+</code></pre>
+<h3 id="2-receiver-deployment-service">2. Receiver Deployment &amp; Service<a class="headerlink" href="#2-receiver-deployment-service" title="Permanent link">&para;</a></h3>
+<pre><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webhook-receiver
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webhook-receiver
+  template:
+    metadata:
+      labels:
+        app: webhook-receiver
+    spec:
+      containers:
+        - name: receiver
+          image: ghcr.io/sunilsankar/webhook-async:v0.1.0-beta
+          args: [&quot;server&quot;, &quot;--config&quot;, &quot;/etc/webhook/config.toml&quot;, &quot;--async&quot;]
+          ports:
+            - containerPort: 9000
+          env:
+            - name: WEBHOOK_ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: webhook-secrets
+                  key: admin-token
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 9000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/v1/ready
+              port: 9000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: config-vol
+              mountPath: /etc/webhook
+      volumes:
+        - name: config-vol
+          configMap:
+            name: webhook-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webhook-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 9000
+  selector:
+    app: webhook-receiver
+</code></pre>
+<hr />
+<h2 id="macos-launchd">macOS (launchd)<a class="headerlink" href="#macos-launchd" title="Permanent link">&para;</a></h2>
+<h3 id="1-install-binary">1. Install Binary<a class="headerlink" href="#1-install-binary" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash">curl -L -o /usr/local/bin/webhook-async https://github.com/sunilsankar/webhook-async/releases/download/v0.1.0-beta/webhook-async-macos-arm64
+chmod +x /usr/local/bin/webhook-async
+</code></pre>
+<h3 id="2-create-launchd-agent-librarylaunchagentscomsunilsankarwebhook-asyncplist">2. Create launchd Agent (<code>~/Library/LaunchAgents/com.sunilsankar.webhook-async.plist</code>)<a class="headerlink" href="#2-create-launchd-agent-librarylaunchagentscomsunilsankarwebhook-asyncplist" title="Permanent link">&para;</a></h3>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+    &lt;key&gt;Label&lt;/key&gt;
+    &lt;string&gt;com.sunilsankar.webhook-async&lt;/string&gt;
+    &lt;key&gt;ProgramArguments&lt;/key&gt;
+    &lt;array&gt;
+        &lt;string&gt;/usr/local/bin/webhook-async&lt;/string&gt;
+        &lt;string&gt;server&lt;/string&gt;
+        &lt;string&gt;--config&lt;/string&gt;
+        &lt;string&gt;/Users/youruser/.config/webhook-async/config.toml&lt;/string&gt;
+    &lt;/array&gt;
+    &lt;key&gt;RunAtLoad&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;KeepAlive&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;StandardOutPath&lt;/key&gt;
+    &lt;string&gt;/Users/youruser/.config/webhook-async/stdout.log&lt;/string&gt;
+    &lt;key&gt;StandardErrorPath&lt;/key&gt;
+    &lt;string&gt;/Users/youruser/.config/webhook-async/stderr.log&lt;/string&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+<h3 id="3-load-agent">3. Load Agent<a class="headerlink" href="#3-load-agent" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash">launchctl load ~/Library/LaunchAgents/com.sunilsankar.webhook-async.plist
+</code></pre>
+<hr />
+<h2 id="windows-server-nssm">Windows Server (NSSM)<a class="headerlink" href="#windows-server-nssm" title="Permanent link">&para;</a></h2>
+<p>Deploy as a managed Windows Service using <a href="https://nssm.cc/">NSSM</a>.</p>
+<ol>
+<li>Download <code>webhook-async-windows-amd64.exe</code> to <code>C:\webhook-async\webhook-async.exe</code>.</li>
+<li>Create <code>C:\webhook-async\config.toml</code> and <code>C:\webhook-async\hooks.json</code>.</li>
+<li>Open Administrator PowerShell and install the service:</li>
+</ol>
+<pre><code class="language-powershell">nssm install WebhookAsync &quot;C:\webhook-async\webhook-async.exe&quot; &quot;server --config C:\webhook-async\config.toml&quot;
+nssm set WebhookAsync AppDirectory &quot;C:\webhook-async&quot;
+nssm set WebhookAsync AppStdout &quot;C:\webhook-async\logs\stdout.log&quot;
+nssm set WebhookAsync AppStderr &quot;C:\webhook-async\logs\stderr.log&quot;
+nssm set WebhookAsync Start SERVICE_AUTO_START
+nssm start WebhookAsync
+</code></pre>
+<hr />
+<h2 id="distributed-scale-out-dedicated-workers">Distributed Scale-Out (Dedicated Workers)<a class="headerlink" href="#distributed-scale-out-dedicated-workers" title="Permanent link">&para;</a></h2>
+<p>In high-volume environments, separate the HTTP API reception layer from execution workers:</p>
+<pre><code>                          [ Ingress Load Balancer ]
+                                     │
+                 ┌───────────────────┴───────────────────┐
+                 ▼                                       ▼
+       [ API Node 1 ]                          [ API Node 2 ]
+       webhook-async server --async            webhook-async server --async
+       (worker.concurrency = 0)                (worker.concurrency = 0)
+                 │                                       │
+                 └───────────────────┬───────────────────┘
+                                     │ (Enqueues Job Snapshot)
+                                     ▼
+                        [ Valkey / Redis Cluster ]
+                                     │
+                 ┌───────────────────┴───────────────────┐
+                 │ (Atomic Lua Claim &amp; Heartbeat)        │
+                 ▼                                       ▼
+      [ Dedicated Worker 1 ]                  [ Dedicated Worker 2 ]
+      webhook-async worker                    webhook-async worker
+      (worker.concurrency = 32)               (worker.concurrency = 32)
+</code></pre>
+<ul>
+<li><strong>API Nodes</strong>: Run <code>webhook-async server --async --config config.toml</code> with <code>worker.concurrency = 0</code>.</li>
+<li><strong>Worker Nodes</strong>: Run <code>webhook-async worker --config config.toml</code> with <code>worker.concurrency = 32</code>.</li>
+</ul>
+<hr />
+<h2 id="reverse-proxy-ingress-caddy-nginx">Reverse Proxy &amp; Ingress (Caddy / Nginx)<a class="headerlink" href="#reverse-proxy-ingress-caddy-nginx" title="Permanent link">&para;</a></h2>
+<h3 id="caddy-automatic-https">Caddy (Automatic HTTPS)<a class="headerlink" href="#caddy-automatic-https" title="Permanent link">&para;</a></h3>
+<pre><code class="language-caddyfile">webhook.example.com {
+    reverse_proxy 127.0.0.1:9000
+
+    # Isolated admin dashboard accessible only from VPN/internal IPs
+    handle_path /admin/* {
+        @internal remote_ip 10.0.0.0/8 192.168.0.0/16 127.0.0.1
+        reverse_proxy @internal 127.0.0.1:9001
+    }
+}
+</code></pre>
+<h3 id="nginx">Nginx<a class="headerlink" href="#nginx" title="Permanent link">&para;</a></h3>
+<pre><code class="language-nginx">upstream webhook_backend {
+    server 127.0.0.1:9000;
+    keepalive 32;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name webhook.example.com;
+
+    ssl_certificate /etc/letsencrypt/live/webhook.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/webhook.example.com/privkey.pem;
+
+    client_max_body_size 10M;
+
+    location / {
+        proxy_pass http://webhook_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Connection &quot;&quot;;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Request-Id $request_id;
+    }
+
+    # Real-time SSE streaming support
+    location /api/v1/events {
+        proxy_pass http://webhook_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Connection &quot;&quot;;
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_read_timeout 24h;
+    }
+}
+</code></pre>
+<hr />
+<h2 id="direct-tls-unix-sockets">Direct TLS &amp; Unix Sockets<a class="headerlink" href="#direct-tls-unix-sockets" title="Permanent link">&para;</a></h2>
+<pre><code class="language-bash"># Direct TLS listening on 9443
+webhook-async server \
+  --port 9443 \
+  --secure \
+  --cert /etc/ssl/certs/webhook.crt \
+  --key /etc/ssl/private/webhook.key \
+  --hooks /etc/webhook/hooks.json
+
+# Direct Unix domain socket
+webhook-async server \
+  --socket /run/webhook-async.sock \
+  --hooks /etc/webhook/hooks.json
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../configuration/" class="btn btn-neutral float-right" title="Configuration">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/sunilsankar/webhook-async" class="fa fa-code-fork" style="color: #fcfcfc"> sunilsankar/webhook-async</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../configuration/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

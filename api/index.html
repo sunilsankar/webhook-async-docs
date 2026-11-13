@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Sunil Sankar" /><link rel="canonical" href="https://sunilsankar.github.io/webhook-async-docs/api/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>REST API & OpenAPI - webhook-async</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "REST API \u0026 OpenAPI";
+        var mkdocs_page_input_path = "api.md";
+        var mkdocs_page_url = "/webhook-async-docs/api/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/rust.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/toml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> webhook-async
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../deployment/">Deployment</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">REST API & OpenAPI</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-authentication-security">1. Authentication &amp; Security</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#authentication-header">Authentication Header</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-webhook-receiver-endpoints">2. Webhook Receiver Endpoints</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-root-liveness-ping">1. Root Liveness &amp; Ping</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-trigger-a-webhook">2. Trigger a Webhook</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#response-status-codes">Response Status Codes</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-system-health-openapi-endpoints">3. System Health &amp; OpenAPI Endpoints</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-basic-health-check">1. Basic Health Check</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-storage-readiness-probe">2. Storage Readiness Probe</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-openapi-31-specification">3. OpenAPI 3.1 Specification</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-administrative-rest-endpoints">4. Administrative REST Endpoints</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-queue-statistics">1. Queue Statistics</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-list-filter-jobs">2. List &amp; Filter Jobs</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#query-parameters">Query Parameters</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-get-job-details-attempts">3. Get Job Details &amp; Attempts</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-retry-a-job">4. Retry a Job</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#5-cancel-a-job">5. Cancel a Job</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#6-list-active-hooks">6. List Active Hooks</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#7-list-active-workers">7. List Active Workers</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#8-storage-status">8. Storage Status</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#9-real-time-server-sent-events-sse">9. Real-Time Server-Sent Events (SSE)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-complete-curl-recipe-book">5. Complete Curl Recipe Book</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#triggering-hooks">Triggering Hooks</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#asynchronous-webhook-with-idempotency-key">Asynchronous Webhook with Idempotency Key</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#synchronous-webhook">Synchronous Webhook</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#administrative-management">Administrative Management</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#check-system-health">Check System Health</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#view-live-queue-statistics">View Live Queue Statistics</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#list-dead-lettered-jobs">List Dead-Lettered Jobs</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#view-specific-job-execution-logs">View Specific Job &amp; Execution Logs</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#retry-a-dead-lettered-job">Retry a Dead-Lettered Job</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#cancel-an-in-flight-job">Cancel an In-Flight Job</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#stream-live-queue-metrics-sse">Stream Live Queue Metrics (SSE)</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../operations/">Operations & Backup</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">webhook-async</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">REST API & OpenAPI</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/sunilsankar/webhook-async/edit/master/docs/api.md">Edit on sunilsankar/webhook-async</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="api-reference-usage">API Reference &amp; Usage<a class="headerlink" href="#api-reference-usage" title="Permanent link">&para;</a></h1>
+<p><a href="../">← Back to Home</a> • <a href="../deployment/">Deployment Guide</a> • <a href="../configuration/">Configuration Reference</a> • <a href="../operations/">Operations</a></p>
+<hr />
+<h2 id="1-authentication-security">1. Authentication &amp; Security<a class="headerlink" href="#1-authentication-security" title="Permanent link">&para;</a></h2>
+<p>All administrative and operational endpoints under <code>/api/v1</code> are secured with Bearer token authentication.</p>
+<h3 id="authentication-header">Authentication Header<a class="headerlink" href="#authentication-header" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">Authorization: Bearer &lt;WEBHOOK_ADMIN_TOKEN&gt;
+</code></pre>
+<ul>
+<li><strong>Fail-Secure Default</strong>: If <code>[auth].admin_token_env</code> or <code>[auth].admin_token_file</code> is not configured, admin endpoints return <code>503 Service Unavailable</code> with message <code>"Admin token not configured."</code>.</li>
+<li><strong>Constant-Time Verification</strong>: Uses <code>subtle::ConstantTimeEq</code> to prevent timing side-channel attacks.</li>
+<li><strong>Built-in Rate Limiting</strong>: 60 requests per minute per token. Breaching the rate limit returns <code>HTTP 429 Too Many Requests</code> with a <code>Retry-After: 60</code> header.</li>
+</ul>
+<hr />
+<h2 id="2-webhook-receiver-endpoints">2. Webhook Receiver Endpoints<a class="headerlink" href="#2-webhook-receiver-endpoints" title="Permanent link">&para;</a></h2>
+<h3 id="1-root-liveness-ping">1. Root Liveness &amp; Ping<a class="headerlink" href="#1-root-liveness-ping" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">GET /
+</code></pre>
+<p>Returns <code>200 OK</code> with body <code>"OK"</code>. Used by upstream load balancers and network checks.</p>
+<h3 id="2-trigger-a-webhook">2. Trigger a Webhook<a class="headerlink" href="#2-trigger-a-webhook" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">POST /{url_prefix}/{hook_id}
+</code></pre>
+<p>Processes an incoming webhook. Supports sub-paths if the hook ID contains slashes (e.g. <code>github/deploy</code>).</p>
+<h4 id="response-status-codes">Response Status Codes<a class="headerlink" href="#response-status-codes" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>200 OK</code>: Synchronous hook executed successfully. Body contains command output (if configured) or <code>response-message</code>.</li>
+<li><code>202 Accepted</code>: Asynchronous hook accepted and durably committed to queue. Body contains <code>job_id</code>, <code>status: "queued"</code>, and <code>message</code>.</li>
+<li><code>400 Bad Request</code>: Trigger rules were not satisfied (or custom status code).</li>
+<li><code>405 Method Not Allowed</code>: Request HTTP method not permitted by hook.</li>
+<li><code>413 Payload Too Large</code>: Request body exceeds <code>server.max_body_bytes</code>.</li>
+<li><code>429 Too Many Requests</code>: Queue capacity full (<code>queue.max_pending_jobs</code> reached).</li>
+<li><code>500 Internal Server Error</code>: Rule evaluation error or synchronous command execution failure.</li>
+<li><code>503 Service Unavailable</code>: Storage backend unavailable; asynchronous hook was <strong>not</strong> acknowledged.</li>
+</ul>
+<hr />
+<h2 id="3-system-health-openapi-endpoints">3. System Health &amp; OpenAPI Endpoints<a class="headerlink" href="#3-system-health-openapi-endpoints" title="Permanent link">&para;</a></h2>
+<h3 id="1-basic-health-check">1. Basic Health Check<a class="headerlink" href="#1-basic-health-check" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">GET /api/v1/health
+</code></pre>
+<p><em>(No authentication required)</em></p>
+<p>Response:</p>
+<pre><code class="language-json">{
+  &quot;status&quot;: &quot;ok&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;
+}
+</code></pre>
+<h3 id="2-storage-readiness-probe">2. Storage Readiness Probe<a class="headerlink" href="#2-storage-readiness-probe" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">GET /api/v1/ready
+</code></pre>
+<p><em>(No authentication required)</em></p>
+<p>Performs a live storage ping (<code>SELECT 1</code> or Redis <code>PING</code>).
+Response:</p>
+<pre><code class="language-json">{
+  &quot;status&quot;: &quot;ready&quot;,
+  &quot;storage&quot;: &quot;connected&quot;
+}
+</code></pre>
+<p><em>Returns <code>503 Service Unavailable</code> if the storage backend is unreachable.</em></p>
+<h3 id="3-openapi-31-specification">3. OpenAPI 3.1 Specification<a class="headerlink" href="#3-openapi-31-specification" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">GET /api/v1/openapi.json
+</code></pre>
+<p><em>(No authentication required)</em></p>
+<p>Returns the complete OpenAPI 3.1 schema documenting all schemas, endpoints, and error types.</p>
+<hr />
+<h2 id="4-administrative-rest-endpoints">4. Administrative REST Endpoints<a class="headerlink" href="#4-administrative-rest-endpoints" title="Permanent link">&para;</a></h2>
+<p><em>(Requires <code>Authorization: Bearer &lt;token&gt;</code>)</em></p>
+<h3 id="1-queue-statistics">1. Queue Statistics<a class="headerlink" href="#1-queue-statistics" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">GET /api/v1/stats
+</code></pre>
+<p>Returns job counts across all 8 canonical states.</p>
+<p>Response:</p>
+<pre><code class="language-json">{
+  &quot;counts_by_state&quot;: {
+    &quot;queued&quot;: 0,
+    &quot;running&quot;: 2,
+    &quot;retry_wait&quot;: 0,
+    &quot;succeeded&quot;: 1420,
+    &quot;failed&quot;: 3,
+    &quot;cancel_requested&quot;: 0,
+    &quot;cancelled&quot;: 1,
+    &quot;dead_letter&quot;: 0
+  },
+  &quot;pending_count&quot;: 2
+}
+</code></pre>
+<hr />
+<h3 id="2-list-filter-jobs">2. List &amp; Filter Jobs<a class="headerlink" href="#2-list-filter-jobs" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">GET /api/v1/jobs?state={state}&amp;hook_id={hook_id}&amp;limit={limit}&amp;offset={offset}
+</code></pre>
+<h4 id="query-parameters">Query Parameters<a class="headerlink" href="#query-parameters" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>state</code>: Optional filter by state (<code>queued</code>, <code>running</code>, <code>retry_wait</code>, <code>succeeded</code>, <code>failed</code>, <code>cancel_requested</code>, <code>cancelled</code>, <code>dead_letter</code>).</li>
+<li><code>hook_id</code>: Optional filter by hook identifier.</li>
+<li><code>limit</code>: Number of items per page (1 to 500, default 50).</li>
+<li><code>offset</code>: Pagination offset (default 0).</li>
+</ul>
+<p>Response:</p>
+<pre><code class="language-json">{
+  &quot;items&quot;: [
+    {
+      &quot;id&quot;: &quot;8a01cb6b-4e12-4f10-9c41-89e70197da96&quot;,
+      &quot;hook_id&quot;: &quot;deploy-app&quot;,
+      &quot;state&quot;: &quot;succeeded&quot;,
+      &quot;priority&quot;: 0,
+      &quot;created_at&quot;: &quot;2026-11-13T10:15:30.123456789Z&quot;,
+      &quot;started_at&quot;: &quot;2026-11-13T10:15:30.130000000Z&quot;,
+      &quot;completed_at&quot;: &quot;2026-11-13T10:15:34.250000000Z&quot;,
+      &quot;attempt&quot;: 1,
+      &quot;max_attempts&quot;: 5,
+      &quot;exit_code&quot;: 0,
+      &quot;stdout_preview&quot;: &quot;Deploy successful.&quot;,
+      &quot;stderr_preview&quot;: &quot;&quot;
+    }
+  ],
+  &quot;total&quot;: 1426,
+  &quot;limit&quot;: 50,
+  &quot;offset&quot;: 0
+}
+</code></pre>
+<hr />
+<h3 id="3-get-job-details-attempts">3. Get Job Details &amp; Attempts<a class="headerlink" href="#3-get-job-details-attempts" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">GET /api/v1/jobs/{id}
+</code></pre>
+<p>Returns the full job record and complete execution attempt history.</p>
+<hr />
+<h3 id="4-retry-a-job">4. Retry a Job<a class="headerlink" href="#4-retry-a-job" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">POST /api/v1/jobs/{id}/retry
+</code></pre>
+<p>Transitions a <code>failed</code> or <code>dead_letter</code> job back to <code>queued</code>. Increments <code>max_attempts</code> if necessary to allow execution.</p>
+<p>Response:</p>
+<pre><code class="language-json">{
+  &quot;job&quot;: {
+    &quot;id&quot;: &quot;8a01cb6b-4e12-4f10-9c41-89e70197da96&quot;,
+    &quot;state&quot;: &quot;queued&quot;,
+    &quot;attempt&quot;: 2,
+    &quot;max_attempts&quot;: 6
+  }
+}
+</code></pre>
+<p><em>Returns <code>409 Conflict</code> if the job is not in a retryable state.</em></p>
+<hr />
+<h3 id="5-cancel-a-job">5. Cancel a Job<a class="headerlink" href="#5-cancel-a-job" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">POST /api/v1/jobs/{id}/cancel
+</code></pre>
+<p>Cancels a <code>queued</code>, <code>retry_wait</code>, or <code>running</code> job. If running, the worker's heartbeat loop sends <code>SIGKILL</code> to the child process group.</p>
+<p>Response:</p>
+<pre><code class="language-json">{
+  &quot;job&quot;: {
+    &quot;id&quot;: &quot;8a01cb6b-4e12-4f10-9c41-89e70197da96&quot;,
+    &quot;state&quot;: &quot;cancel_requested&quot;
+  }
+}
+</code></pre>
+<hr />
+<h3 id="6-list-active-hooks">6. List Active Hooks<a class="headerlink" href="#6-list-active-hooks" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">GET /api/v1/hooks
+</code></pre>
+<p>Returns metadata for all loaded hooks. All secrets and sensitive parameters are masked or redacted.</p>
+<hr />
+<h3 id="7-list-active-workers">7. List Active Workers<a class="headerlink" href="#7-list-active-workers" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">GET /api/v1/workers
+</code></pre>
+<p>Returns all registered worker nodes, concurrency settings, active tasks, and heartbeats.</p>
+<hr />
+<h3 id="8-storage-status">8. Storage Status<a class="headerlink" href="#8-storage-status" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">GET /api/v1/storage/status
+</code></pre>
+<p>Returns backend kind (<code>sqlite</code>, <code>valkey</code>, <code>redis</code>), storage capabilities, and live connectivity status.</p>
+<hr />
+<h3 id="9-real-time-server-sent-events-sse">9. Real-Time Server-Sent Events (SSE)<a class="headerlink" href="#9-real-time-server-sent-events-sse" title="Permanent link">&para;</a></h3>
+<pre><code class="language-http">GET /api/v1/events
+</code></pre>
+<p>Pushes live queue statistics updates every 2 seconds over a persistent HTTP stream.</p>
+<hr />
+<h2 id="5-complete-curl-recipe-book">5. Complete Curl Recipe Book<a class="headerlink" href="#5-complete-curl-recipe-book" title="Permanent link">&para;</a></h2>
+<h3 id="triggering-hooks">Triggering Hooks<a class="headerlink" href="#triggering-hooks" title="Permanent link">&para;</a></h3>
+<h4 id="asynchronous-webhook-with-idempotency-key">Asynchronous Webhook with Idempotency Key<a class="headerlink" href="#asynchronous-webhook-with-idempotency-key" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash">curl -X POST http://localhost:9000/hooks/deploy-app \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Idempotency-Key: github-delivery-1029384&quot; \
+  -d '{&quot;ref&quot;: &quot;refs/heads/main&quot;, &quot;commit&quot;: &quot;05dc3f3&quot;}'
+</code></pre>
+<h4 id="synchronous-webhook">Synchronous Webhook<a class="headerlink" href="#synchronous-webhook" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash">curl -X POST http://localhost:9000/hooks/sync-task \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;action&quot;: &quot;ping&quot;}'
+</code></pre>
+<hr />
+<h3 id="administrative-management">Administrative Management<a class="headerlink" href="#administrative-management" title="Permanent link">&para;</a></h3>
+<p>Set your token variable:</p>
+<pre><code class="language-bash">export TOKEN=&quot;your-admin-token-here&quot;
+</code></pre>
+<h4 id="check-system-health">Check System Health<a class="headerlink" href="#check-system-health" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash">curl -s http://localhost:9000/api/v1/health
+curl -s http://localhost:9000/api/v1/ready
+</code></pre>
+<h4 id="view-live-queue-statistics">View Live Queue Statistics<a class="headerlink" href="#view-live-queue-statistics" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash">curl -s http://localhost:9000/api/v1/stats \
+  -H &quot;Authorization: Bearer $TOKEN&quot; | jq .
+</code></pre>
+<h4 id="list-dead-lettered-jobs">List Dead-Lettered Jobs<a class="headerlink" href="#list-dead-lettered-jobs" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash">curl -s &quot;http://localhost:9000/api/v1/jobs?state=dead_letter&amp;limit=20&quot; \
+  -H &quot;Authorization: Bearer $TOKEN&quot; | jq .
+</code></pre>
+<h4 id="view-specific-job-execution-logs">View Specific Job &amp; Execution Logs<a class="headerlink" href="#view-specific-job-execution-logs" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash">curl -s http://localhost:9000/api/v1/jobs/8a01cb6b-4e12-4f10-9c41-89e70197da96 \
+  -H &quot;Authorization: Bearer $TOKEN&quot; | jq .
+</code></pre>
+<h4 id="retry-a-dead-lettered-job">Retry a Dead-Lettered Job<a class="headerlink" href="#retry-a-dead-lettered-job" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash">curl -X POST http://localhost:9000/api/v1/jobs/8a01cb6b-4e12-4f10-9c41-89e70197da96/retry \
+  -H &quot;Authorization: Bearer $TOKEN&quot; | jq .
+</code></pre>
+<h4 id="cancel-an-in-flight-job">Cancel an In-Flight Job<a class="headerlink" href="#cancel-an-in-flight-job" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash">curl -X POST http://localhost:9000/api/v1/jobs/8a01cb6b-4e12-4f10-9c41-89e70197da96/cancel \
+  -H &quot;Authorization: Bearer $TOKEN&quot; | jq .
+</code></pre>
+<h4 id="stream-live-queue-metrics-sse">Stream Live Queue Metrics (SSE)<a class="headerlink" href="#stream-live-queue-metrics-sse" title="Permanent link">&para;</a></h4>
+<pre><code class="language-bash">curl -N http://localhost:9000/api/v1/events \
+  -H &quot;Authorization: Bearer $TOKEN&quot;
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../configuration/" class="btn btn-neutral float-left" title="Configuration"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../operations/" class="btn btn-neutral float-right" title="Operations & Backup">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/sunilsankar/webhook-async" class="fa fa-code-fork" style="color: #fcfcfc"> sunilsankar/webhook-async</a>
+        </span>
+    
+    
+      <span><a href="../configuration/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../operations/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
