@@ -15,7 +15,7 @@
 | **`429 Rate limit exceeded`** | Exceeded 60 requests/minute on administrative endpoints. | Wait for the duration in `Retry-After: 60` or throttle management scripts. |
 | **`500 Internal Server Error`** | Synchronous command returned non-zero exit code or rule evaluation threw an unhandled error. | Inspect stdout/stderr in response (if `include-command-output-in-response-on-error: true`) or inspect server logs. |
 | **`503 Service Unavailable` (On Hook Post)** | Storage backend is unreachable when accepting an asynchronous webhook. | Check SQLite filesystem permissions or verify Valkey/Redis network connectivity. Webhook was **not** acknowledged. |
-| **`503 Admin token not configured`** | Calling `/api/v1/*` without configuring `admin_token_env` or `admin_token_file`. | Set `WEBHOOK_ADMIN_TOKEN` in the environment or set `admin_token_file` in `config.toml`. |
+| **`503 Admin token not configured`** | Calling `/api/v1/*` without configuring `admin_token`, `admin_token_env`, or `admin_token_file`. | Set `admin_token = "..."` directly in `config.toml`, or set `WEBHOOK_ADMIN_TOKEN` in the environment. |
 
 ---
 

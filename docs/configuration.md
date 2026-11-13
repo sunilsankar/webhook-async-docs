@@ -61,8 +61,11 @@ bind = "127.0.0.1:9001"                 # Dedicated bind for the Web UI
 path_prefix = ""                        # Optional URL subpath prefix (e.g. "/admin")
 
 [auth]
-admin_token_env = "WEBHOOK_ADMIN_TOKEN" # Environment variable containing admin Bearer token
-# admin_token_file = "/run/secrets/admin_token" # Or file path containing admin token
+admin_token = "password@123"                # Direct literal password in TOML
+# Or load from an environment variable (or file path):
+# admin_token_env = "WEBHOOK_ADMIN_TOKEN"
+# Or load from a dedicated secret file:
+# admin_token_file = "/run/secrets/admin_token"
 ```
 
 ---

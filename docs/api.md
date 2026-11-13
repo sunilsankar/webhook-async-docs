@@ -156,7 +156,7 @@ curl -s http://localhost:9000/api/v1/openapi.json | jq .
 
 ## 4. Administrative REST API (`/api/v1/*`)
 
-All administrative endpoints require Bearer token authentication configured via `[auth].admin_token_env` or `[auth].admin_token_file`.
+All administrative endpoints require Bearer token authentication configured via `[auth].admin_token`, `[auth].admin_token_env`, or `[auth].admin_token_file`.
 
 ```http
 Authorization: Bearer <YOUR_ADMIN_TOKEN>
