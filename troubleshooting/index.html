@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Sunil Sankar" /><link rel="canonical" href="https://sunilsankar.github.io/webhook-async-docs/troubleshooting/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Troubleshooting - webhook-async</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Troubleshooting";
+        var mkdocs_page_input_path = "troubleshooting.md";
+        var mkdocs_page_url = "/webhook-async-docs/troubleshooting/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/rust.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/toml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> webhook-async
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../deployment/">Deployment</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../api/">REST API & OpenAPI</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../operations/">Operations & Backup</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../security/">Security</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Troubleshooting</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#http-status-codes-solutions">HTTP Status Codes &amp; Solutions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#worker-execution-issues">Worker &amp; Execution Issues</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#job-transitions-immediately-to-dead_letter">Job Transitions Immediately to dead_letter</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#worker-heartbeat-lease-expiry">Worker Heartbeat / Lease Expiry</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#database-is-locked-on-sqlite">database is locked on SQLite</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#diagnostic-commands">Diagnostic Commands</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#validate-configuration-files">Validate Configuration Files</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#check-storage-health">Check Storage Health</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#test-webhook-triggers-locally">Test Webhook Triggers Locally</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">webhook-async</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Troubleshooting</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/sunilsankar/webhook-async/edit/master/docs/troubleshooting.md">Edit on sunilsankar/webhook-async</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="troubleshooting-matrix">Troubleshooting Matrix<a class="headerlink" href="#troubleshooting-matrix" title="Permanent link">&para;</a></h1>
+<p><a href="../">← Back to Home</a> • <a href="../deployment/">Deployment Guide</a> • <a href="../configuration/">Configuration Reference</a> • <a href="../api/">API Reference</a></p>
+<hr />
+<h2 id="http-status-codes-solutions">HTTP Status Codes &amp; Solutions<a class="headerlink" href="#http-status-codes-solutions" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Status</th>
+<th style="text-align: left;">Cause</th>
+<th style="text-align: left;">Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><code>400 Hook rules were not satisfied.</code></strong></td>
+<td style="text-align: left;">Trigger rule mismatch (e.g. invalid HMAC secret, missing header, payload branch mismatch).</td>
+<td style="text-align: left;">Run server with <code>--verbose</code> to inspect trigger evaluation logs. Verify HMAC secret matches provider.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>405 Method Not Allowed</code></strong></td>
+<td style="text-align: left;">Webhook sent with an HTTP method not listed in hook's <code>http-methods</code>.</td>
+<td style="text-align: left;">Update hook's <code>http-methods</code> array or send the request using <code>POST</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>413 Payload Too Large</code></strong></td>
+<td style="text-align: left;">Request payload exceeds <code>server.max_body_bytes</code>.</td>
+<td style="text-align: left;">Increase <code>server.max_body_bytes</code> in <code>config.toml</code> (default is 10 MB).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>429 Queue capacity full</code></strong></td>
+<td style="text-align: left;">In-flight queued jobs have reached <code>queue.max_pending_jobs</code>.</td>
+<td style="text-align: left;">Increase worker concurrency (<code>worker.concurrency</code>), add dedicated worker nodes, or increase <code>queue.max_pending_jobs</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>429 Rate limit exceeded</code></strong></td>
+<td style="text-align: left;">Exceeded 60 requests/minute on administrative endpoints.</td>
+<td style="text-align: left;">Wait for the duration in <code>Retry-After: 60</code> or throttle management scripts.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>500 Internal Server Error</code></strong></td>
+<td style="text-align: left;">Synchronous command returned non-zero exit code or rule evaluation threw an unhandled error.</td>
+<td style="text-align: left;">Inspect stdout/stderr in response (if <code>include-command-output-in-response-on-error: true</code>) or inspect server logs.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>503 Service Unavailable</code> (On Hook Post)</strong></td>
+<td style="text-align: left;">Storage backend is unreachable when accepting an asynchronous webhook.</td>
+<td style="text-align: left;">Check SQLite filesystem permissions or verify Valkey/Redis network connectivity. Webhook was <strong>not</strong> acknowledged.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>503 Admin token not configured</code></strong></td>
+<td style="text-align: left;">Calling <code>/api/v1/*</code> without configuring <code>admin_token_env</code> or <code>admin_token_file</code>.</td>
+<td style="text-align: left;">Set <code>WEBHOOK_ADMIN_TOKEN</code> in the environment or set <code>admin_token_file</code> in <code>config.toml</code>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="worker-execution-issues">Worker &amp; Execution Issues<a class="headerlink" href="#worker-execution-issues" title="Permanent link">&para;</a></h2>
+<h3 id="job-transitions-immediately-to-dead_letter">Job Transitions Immediately to <code>dead_letter</code><a class="headerlink" href="#job-transitions-immediately-to-dead_letter" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Cause</strong>: Executable path or working directory does not exist or lacks execute permissions.</li>
+<li><strong>Why</strong>: <code>webhook-async</code> classifies missing binaries as non-transient <code>Configuration</code> errors and dead-letters immediately to prevent infinite retry loops.</li>
+<li><strong>Solution</strong>: Use absolute executable paths (e.g. <code>/usr/local/bin/deploy.sh</code>) and ensure the <code>webhook</code> user has read and execute permissions.</li>
+</ul>
+<h3 id="worker-heartbeat-lease-expiry">Worker Heartbeat / Lease Expiry<a class="headerlink" href="#worker-heartbeat-lease-expiry" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Symptom</strong>: Job stays in <code>running</code> and is reclaimed by another worker after 60s.</li>
+<li><strong>Cause</strong>: Task process completely locked up the CPU or network, preventing the asynchronous heartbeat loop from renewing the lease.</li>
+<li><strong>Solution</strong>: Ensure system resources are sufficient, or increase <code>worker.lease_duration_seconds</code> (e.g. to 120s).</li>
+</ul>
+<h3 id="database-is-locked-on-sqlite"><code>database is locked</code> on SQLite<a class="headerlink" href="#database-is-locked-on-sqlite" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Cause</strong>: High concurrency without Write-Ahead Logging (WAL) or missing busy timeout.</li>
+<li><strong>Solution</strong>: Verify that <code>wal_mode = true</code> and <code>busy_timeout_ms = 5000</code> are configured in <code>[storage.sqlite]</code>.</li>
+</ul>
+<hr />
+<h2 id="diagnostic-commands">Diagnostic Commands<a class="headerlink" href="#diagnostic-commands" title="Permanent link">&para;</a></h2>
+<h3 id="validate-configuration-files">Validate Configuration Files<a class="headerlink" href="#validate-configuration-files" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash">webhook-async config validate --config config.toml --hooks hooks.json
+</code></pre>
+<h3 id="check-storage-health">Check Storage Health<a class="headerlink" href="#check-storage-health" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash">webhook-async storage status --config config.toml
+</code></pre>
+<h3 id="test-webhook-triggers-locally">Test Webhook Triggers Locally<a class="headerlink" href="#test-webhook-triggers-locally" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash">curl -v -X POST http://localhost:9000/hooks/test-hook \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;test&quot;: true}'
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../security/" class="btn btn-neutral float-left" title="Security"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/sunilsankar/webhook-async" class="fa fa-code-fork" style="color: #fcfcfc"> sunilsankar/webhook-async</a>
+        </span>
+    
+    
+      <span><a href="../security/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

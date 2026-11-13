@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Sunil Sankar" /><link rel="canonical" href="https://sunilsankar.github.io/webhook-async-docs/security/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Security - webhook-async</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Security";
+        var mkdocs_page_input_path = "security.md";
+        var mkdocs_page_url = "/webhook-async-docs/security/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/rust.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/toml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> webhook-async
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../deployment/">Deployment</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../api/">REST API & OpenAPI</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../operations/">Operations & Backup</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Security</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-threat-model-principles">1. Threat Model &amp; Principles</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#foundational-principles">Foundational Principles</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-process-execution-security">2. Process Execution Security</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#direct-process-execution-vs-shell-injection">Direct Process Execution vs Shell Injection</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#process-group-sandboxing">Process Group Sandboxing</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-cryptographic-verification-signatures">3. Cryptographic Verification &amp; Signatures</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#constant-time-implementation">Constant-Time Implementation</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-web-management-ui-security">4. Web Management UI Security</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-security-checklist">5. Security Checklist</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">webhook-async</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Security</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/sunilsankar/webhook-async/edit/master/docs/security.md">Edit on sunilsankar/webhook-async</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="security-architecture-hardening">Security Architecture &amp; Hardening<a class="headerlink" href="#security-architecture-hardening" title="Permanent link">&para;</a></h1>
+<p><a href="../">← Back to Home</a> • <a href="../deployment/">Deployment Guide</a> • <a href="../configuration/">Configuration Reference</a> • <a href="../api/">API Reference</a></p>
+<hr />
+<h2 id="1-threat-model-principles">1. Threat Model &amp; Principles<a class="headerlink" href="#1-threat-model-principles" title="Permanent link">&para;</a></h2>
+<p><code>webhook-async</code> receives untrusted payloads from the public Internet and executes administrative commands on internal infrastructure. Security is the paramount operational constraint.</p>
+<h3 id="foundational-principles">Foundational Principles<a class="headerlink" href="#foundational-principles" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Memory Safety</strong>: Written entirely in 100% safe Rust. No buffer overflows, use-after-free, or data races.</li>
+<li><strong>Fail-Secure Defaults</strong>: Administrative endpoints require explicit token configuration. If unconfigured, access is rejected with <code>503 Service Unavailable</code>.</li>
+<li><strong>Zero Shell Interpolation</strong>: Commands are executed directly via OS system calls (<code>execve</code>) with discrete argument vectors. Payload strings are <strong>never</strong> evaluated by a shell interpreter.</li>
+<li><strong>Constant-Time Verification</strong>: All cryptographic signatures and authentication tokens are validated in constant time to prevent timing side-channel attacks.</li>
+<li><strong>Process Sandboxing</strong>: Command executions are assigned discrete process groups (<code>-pgid</code>), bounded by strict execution timeouts, and killed with <code>SIGKILL</code> on timeout or cancellation.</li>
+</ul>
+<hr />
+<h2 id="2-process-execution-security">2. Process Execution Security<a class="headerlink" href="#2-process-execution-security" title="Permanent link">&para;</a></h2>
+<h3 id="direct-process-execution-vs-shell-injection">Direct Process Execution vs Shell Injection<a class="headerlink" href="#direct-process-execution-vs-shell-injection" title="Permanent link">&para;</a></h3>
+<p>Vulnerable systems often run webhook commands like this:</p>
+<pre><code class="language-bash"># VULNERABLE:
+sh -c &quot;deploy.sh --branch $BRANCH&quot;  # Payload: &quot;; rm -rf / ;&quot;
+</code></pre>
+<p>In <code>webhook-async</code>, commands are invoked directly:</p>
+<pre><code class="language-rust">let mut cmd = tokio::process::Command::new(&amp;spec.executable);
+cmd.args(&amp;spec.args);
+cmd.envs(&amp;spec.env);
+</code></pre>
+<p>Payload contents can only occupy designated discrete argument elements or environment variables. It is mathematically impossible for a payload value to inject additional command flags or shell operators.</p>
+<h3 id="process-group-sandboxing">Process Group Sandboxing<a class="headerlink" href="#process-group-sandboxing" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Child processes are launched in their own process group (<code>process_group(0)</code>).</li>
+<li>If execution exceeds <code>queue.default_timeout_seconds</code> or an operator cancels the task, <code>webhook-async</code> sends <code>SIGKILL</code> to <code>-pgid</code>.</li>
+<li>This guarantees that background subprocesses, sub-shells, or detached child processes are terminated immediately rather than orphaned.</li>
+</ol>
+<hr />
+<h2 id="3-cryptographic-verification-signatures">3. Cryptographic Verification &amp; Signatures<a class="headerlink" href="#3-cryptographic-verification-signatures" title="Permanent link">&para;</a></h2>
+<p>Public webhooks should always enforce cryptographic signature verification using provider secrets.</p>
+<p>Supported HMAC verification matchers:
+- <code>payload-hmac-sha256</code> (GitHub <code>X-Hub-Signature-256</code>, Stripe)
+- <code>payload-hmac-sha1</code> (GitHub legacy <code>X-Hub-Signature</code>, Bitbucket)
+- <code>payload-hmac-sha512</code>
+- <code>scalr-signature</code> (HMAC-SHA1 Date + Body verification)</p>
+<h3 id="constant-time-implementation">Constant-Time Implementation<a class="headerlink" href="#constant-time-implementation" title="Permanent link">&para;</a></h3>
+<p>All HMAC digests and tokens are verified using <code>subtle::ConstantTimeEq</code>:</p>
+<pre><code class="language-rust">mac.verify_slice(&amp;candidate_mac).map_err(...)
+</code></pre>
+<p>Timing attacks attempting to deduce secrets byte-by-byte are mathematically defeated.</p>
+<hr />
+<h2 id="4-web-management-ui-security">4. Web Management UI Security<a class="headerlink" href="#4-web-management-ui-security" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Session Tokens</strong>: Login issues a cryptographically random UUID session token stored in an <code>HttpOnly</code>, <code>SameSite=Lax</code> cookie.</li>
+<li><strong>CSRF Tokens</strong>: Every mutation (Retry, Cancel, Logout) strictly requires a matching <code>X-CSRF-Token</code> header or form field.</li>
+<li><strong>Strict HTML Escaping</strong>: Askama templates strictly escape all user-supplied variables by default, defeating Cross-Site Scripting (XSS).</li>
+<li><strong>Isolated Binding</strong>: The management UI can be bound to a separate IP/port (e.g. <code>127.0.0.1:9001</code>) away from the public webhook receiver.</li>
+</ul>
+<hr />
+<h2 id="5-security-checklist">5. Security Checklist<a class="headerlink" href="#5-security-checklist" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[ ] Run <code>webhook-async</code> as an unprivileged dedicated service account (<code>webhook</code>).</li>
+<li>[ ] Set <code>WEBHOOK_ADMIN_TOKEN</code> with at least 32 cryptographically random characters.</li>
+<li>[ ] Enforce HMAC signature validation on all public hooks.</li>
+<li>[ ] Bound execution timeouts (<code>queue.default_timeout_seconds</code>).</li>
+<li>[ ] Use direct TLS (<code>--secure</code>) or an authenticated reverse proxy (Nginx/Caddy) with HTTPS.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../operations/" class="btn btn-neutral float-left" title="Operations & Backup"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../troubleshooting/" class="btn btn-neutral float-right" title="Troubleshooting">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/sunilsankar/webhook-async" class="fa fa-code-fork" style="color: #fcfcfc"> sunilsankar/webhook-async</a>
+        </span>
+    
+    
+      <span><a href="../operations/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../troubleshooting/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
