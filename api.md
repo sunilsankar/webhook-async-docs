@@ -1,0 +1,304 @@
+# API Reference & Usage
+
+[← Back to Home](index.html) • [Deployment Guide](deployment.html) • [Configuration Reference](configuration.html) • [Operations](operations.html)
+
+---
+
+## 1. Authentication & Security
+
+All administrative and operational endpoints under `/api/v1` are secured with Bearer token authentication.
+
+### Authentication Header
+```http
+Authorization: Bearer <WEBHOOK_ADMIN_TOKEN>
+```
+
+- **Fail-Secure Default**: If `[auth].admin_token_env` or `[auth].admin_token_file` is not configured, admin endpoints return `503 Service Unavailable` with message `"Admin token not configured."`.
+- **Constant-Time Verification**: Uses `subtle::ConstantTimeEq` to prevent timing side-channel attacks.
+- **Built-in Rate Limiting**: 60 requests per minute per token. Breaching the rate limit returns `HTTP 429 Too Many Requests` with a `Retry-After: 60` header.
+
+---
+
+## 2. Webhook Receiver Endpoints
+
+### 1. Root Liveness & Ping
+```http
+GET /
+```
+Returns `200 OK` with body `"OK"`. Used by upstream load balancers and network checks.
+
+### 2. Trigger a Webhook
+```http
+POST /{url_prefix}/{hook_id}
+```
+Processes an incoming webhook. Supports sub-paths if the hook ID contains slashes (e.g. `github/deploy`).
+
+#### Response Status Codes
+- `200 OK`: Synchronous hook executed successfully. Body contains command output (if configured) or `response-message`.
+- `202 Accepted`: Asynchronous hook accepted and durably committed to queue. Body contains `job_id`, `status: "queued"`, and `message`.
+- `400 Bad Request`: Trigger rules were not satisfied (or custom status code).
+- `405 Method Not Allowed`: Request HTTP method not permitted by hook.
+- `413 Payload Too Large`: Request body exceeds `server.max_body_bytes`.
+- `429 Too Many Requests`: Queue capacity full (`queue.max_pending_jobs` reached).
+- `500 Internal Server Error`: Rule evaluation error or synchronous command execution failure.
+- `503 Service Unavailable`: Storage backend unavailable; asynchronous hook was **not** acknowledged.
+
+---
+
+## 3. System Health & OpenAPI Endpoints
+
+### 1. Basic Health Check
+```http
+GET /api/v1/health
+```
+*(No authentication required)*
+
+Response:
+```json
+{
+  "status": "ok",
+  "version": "0.1.0"
+}
+```
+
+### 2. Storage Readiness Probe
+```http
+GET /api/v1/ready
+```
+*(No authentication required)*
+
+Performs a live storage ping (`SELECT 1` or Redis `PING`).
+Response:
+```json
+{
+  "status": "ready",
+  "storage": "connected"
+}
+```
+*Returns `503 Service Unavailable` if the storage backend is unreachable.*
+
+### 3. OpenAPI 3.1 Specification
+```http
+GET /api/v1/openapi.json
+```
+*(No authentication required)*
+
+Returns the complete OpenAPI 3.1 schema documenting all schemas, endpoints, and error types.
+
+---
+
+## 4. Administrative REST Endpoints
+
+*(Requires `Authorization: Bearer <token>`)*
+
+### 1. Queue Statistics
+```http
+GET /api/v1/stats
+```
+Returns job counts across all 8 canonical states.
+
+Response:
+```json
+{
+  "counts_by_state": {
+    "queued": 0,
+    "running": 2,
+    "retry_wait": 0,
+    "succeeded": 1420,
+    "failed": 3,
+    "cancel_requested": 0,
+    "cancelled": 1,
+    "dead_letter": 0
+  },
+  "pending_count": 2
+}
+```
+
+---
+
+### 2. List & Filter Jobs
+```http
+GET /api/v1/jobs?state={state}&hook_id={hook_id}&limit={limit}&offset={offset}
+```
+
+#### Query Parameters
+- `state`: Optional filter by state (`queued`, `running`, `retry_wait`, `succeeded`, `failed`, `cancel_requested`, `cancelled`, `dead_letter`).
+- `hook_id`: Optional filter by hook identifier.
+- `limit`: Number of items per page (1 to 500, default 50).
+- `offset`: Pagination offset (default 0).
+
+Response:
+```json
+{
+  "items": [
+    {
+      "id": "8a01cb6b-4e12-4f10-9c41-89e70197da96",
+      "hook_id": "deploy-app",
+      "state": "succeeded",
+      "priority": 0,
+      "created_at": "2026-11-13T10:15:30.123456789Z",
+      "started_at": "2026-11-13T10:15:30.130000000Z",
+      "completed_at": "2026-11-13T10:15:34.250000000Z",
+      "attempt": 1,
+      "max_attempts": 5,
+      "exit_code": 0,
+      "stdout_preview": "Deploy successful.",
+      "stderr_preview": ""
+    }
+  ],
+  "total": 1426,
+  "limit": 50,
+  "offset": 0
+}
+```
+
+---
+
+### 3. Get Job Details & Attempts
+```http
+GET /api/v1/jobs/{id}
+```
+Returns the full job record and complete execution attempt history.
+
+---
+
+### 4. Retry a Job
+```http
+POST /api/v1/jobs/{id}/retry
+```
+Transitions a `failed` or `dead_letter` job back to `queued`. Increments `max_attempts` if necessary to allow execution.
+
+Response:
+```json
+{
+  "job": {
+    "id": "8a01cb6b-4e12-4f10-9c41-89e70197da96",
+    "state": "queued",
+    "attempt": 2,
+    "max_attempts": 6
+  }
+}
+```
+*Returns `409 Conflict` if the job is not in a retryable state.*
+
+---
+
+### 5. Cancel a Job
+```http
+POST /api/v1/jobs/{id}/cancel
+```
+Cancels a `queued`, `retry_wait`, or `running` job. If running, the worker's heartbeat loop sends `SIGKILL` to the child process group.
+
+Response:
+```json
+{
+  "job": {
+    "id": "8a01cb6b-4e12-4f10-9c41-89e70197da96",
+    "state": "cancel_requested"
+  }
+}
+```
+
+---
+
+### 6. List Active Hooks
+```http
+GET /api/v1/hooks
+```
+Returns metadata for all loaded hooks. All secrets and sensitive parameters are masked or redacted.
+
+---
+
+### 7. List Active Workers
+```http
+GET /api/v1/workers
+```
+Returns all registered worker nodes, concurrency settings, active tasks, and heartbeats.
+
+---
+
+### 8. Storage Status
+```http
+GET /api/v1/storage/status
+```
+Returns backend kind (`sqlite`, `valkey`, `redis`), storage capabilities, and live connectivity status.
+
+---
+
+### 9. Real-Time Server-Sent Events (SSE)
+```http
+GET /api/v1/events
+```
+Pushes live queue statistics updates every 2 seconds over a persistent HTTP stream.
+
+---
+
+## 5. Complete Curl Recipe Book
+
+### Triggering Hooks
+
+#### Asynchronous Webhook with Idempotency Key
+```bash
+curl -X POST http://localhost:9000/hooks/deploy-app \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: github-delivery-1029384" \
+  -d '{"ref": "refs/heads/main", "commit": "05dc3f3"}'
+```
+
+#### Synchronous Webhook
+```bash
+curl -X POST http://localhost:9000/hooks/sync-task \
+  -H "Content-Type: application/json" \
+  -d '{"action": "ping"}'
+```
+
+---
+
+### Administrative Management
+
+Set your token variable:
+```bash
+export TOKEN="your-admin-token-here"
+```
+
+#### Check System Health
+```bash
+curl -s http://localhost:9000/api/v1/health
+curl -s http://localhost:9000/api/v1/ready
+```
+
+#### View Live Queue Statistics
+```bash
+curl -s http://localhost:9000/api/v1/stats \
+  -H "Authorization: Bearer $TOKEN" | jq .
+```
+
+#### List Dead-Lettered Jobs
+```bash
+curl -s "http://localhost:9000/api/v1/jobs?state=dead_letter&limit=20" \
+  -H "Authorization: Bearer $TOKEN" | jq .
+```
+
+#### View Specific Job & Execution Logs
+```bash
+curl -s http://localhost:9000/api/v1/jobs/8a01cb6b-4e12-4f10-9c41-89e70197da96 \
+  -H "Authorization: Bearer $TOKEN" | jq .
+```
+
+#### Retry a Dead-Lettered Job
+```bash
+curl -X POST http://localhost:9000/api/v1/jobs/8a01cb6b-4e12-4f10-9c41-89e70197da96/retry \
+  -H "Authorization: Bearer $TOKEN" | jq .
+```
+
+#### Cancel an In-Flight Job
+```bash
+curl -X POST http://localhost:9000/api/v1/jobs/8a01cb6b-4e12-4f10-9c41-89e70197da96/cancel \
+  -H "Authorization: Bearer $TOKEN" | jq .
+```
+
+#### Stream Live Queue Metrics (SSE)
+```bash
+curl -N http://localhost:9000/api/v1/events \
+  -H "Authorization: Bearer $TOKEN"
+```
