@@ -170,8 +170,8 @@
 </tr>
 <tr>
 <td style="text-align: left;"><strong><code>503 Admin token not configured</code></strong></td>
-<td style="text-align: left;">Calling <code>/api/v1/*</code> without configuring <code>admin_token_env</code> or <code>admin_token_file</code>.</td>
-<td style="text-align: left;">Set <code>WEBHOOK_ADMIN_TOKEN</code> in the environment or set <code>admin_token_file</code> in <code>config.toml</code>.</td>
+<td style="text-align: left;">Calling <code>/api/v1/*</code> without configuring <code>admin_token</code>, <code>admin_token_env</code>, or <code>admin_token_file</code>.</td>
+<td style="text-align: left;">Set <code>admin_token = "..."</code> directly in <code>config.toml</code>, or set <code>WEBHOOK_ADMIN_TOKEN</code> in the environment.</td>
 </tr>
 </tbody>
 </table>

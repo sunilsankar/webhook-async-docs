@@ -203,8 +203,11 @@ bind = &quot;127.0.0.1:9001&quot;                 # Dedicated bind for the Web U
 path_prefix = &quot;&quot;                        # Optional URL subpath prefix (e.g. &quot;/admin&quot;)
 
 [auth]
-admin_token_env = &quot;WEBHOOK_ADMIN_TOKEN&quot; # Environment variable containing admin Bearer token
-# admin_token_file = &quot;/run/secrets/admin_token&quot; # Or file path containing admin token
+admin_token = &quot;password@123&quot;                # Direct literal password in TOML
+# Or load from an environment variable (or file path):
+# admin_token_env = &quot;WEBHOOK_ADMIN_TOKEN&quot;
+# Or load from a dedicated secret file:
+# admin_token_file = &quot;/run/secrets/admin_token&quot;
 </code></pre>
 <hr />
 <h2 id="2-step-by-step-guide-how-to-configure-hooksjson">2. Step-by-Step Guide: How to Configure <code>hooks.json</code><a class="headerlink" href="#2-step-by-step-guide-how-to-configure-hooksjson" title="Permanent link">&para;</a></h2>
