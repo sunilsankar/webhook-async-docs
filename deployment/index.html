@@ -339,8 +339,11 @@ data:
     [storage]
     backend = &quot;valkey&quot;
     [storage.valkey]
-    url = &quot;redis://valkey-cluster:6379/0&quot;
-    key_prefix = &quot;k8s_webhook:&quot;
+    host = &quot;valkey-cluster&quot;
+    port = 6379
+    database = 0
+    password = &quot;secret_password&quot;
+    key_prefix = &quot;k8s_webhook&quot;
 
     [worker]
     concurrency = 8

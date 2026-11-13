@@ -35,9 +35,20 @@ wal_mode = true                         # Enable Write-Ahead Logging (WAL) for c
 busy_timeout_ms = 5000                  # Maximum wait time on busy database locks
 
 # Valkey / Redis configuration (uncomment when backend is "valkey" or "redis"):
-# [storage.valkey]
-# url = "redis://10.0.1.50:6379/0"      # Accepts redis://, rediss://, valkey://, valkeys://
-# key_prefix = "webhook_async:"         # Namespaced key prefix (uses hash-tags for cluster)
+# Option A: Discrete connection fields (recommended):
+# [storage.valkey]                          # Or [storage.redis] when backend = "redis"
+# host = "127.0.0.1"                        # Server hostname or IP address (default: "127.0.0.1")
+# port = 6379                               # Server port (default: 6379)
+# database = 0                              # Database index (0-15) or database name
+# username = "webhook_worker"               # ACL username (optional)
+# password = "your_secret_password"         # Authentication password (redacted in logs)
+# tls = false                               # Enable TLS encryption (valkeys://)
+# key_prefix = "webhook_async"              # Namespaced key prefix (uses hash-tags for cluster)
+#
+# Option B: Single connection URL (mutually exclusive with discrete fields):
+# [storage.redis]
+# url = "redis://:secret@10.0.1.50:6379/0"  # Accepts redis://, rediss://, valkey://, valkeys://
+# key_prefix = "webhook_async"              # Namespaced key prefix
 
 [worker]
 concurrency = 8                         # Maximum concurrent background tasks
