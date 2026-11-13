@@ -57,37 +57,51 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#1-application-configuration-configtoml">1. Application Configuration (config.toml)</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#2-hook-definitions-hooksjson-hooksyaml">2. Hook Definitions (hooks.json / hooks.yaml)</a>
+    <li class="toctree-l2"><a class="reference internal" href="#2-step-by-step-guide-how-to-configure-hooksjson">2. Step-by-Step Guide: How to Configure hooks.json</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#complete-hook-schema">Complete Hook Schema</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-1-the-absolute-minimum-hook-5-lines">Step 1: The Absolute Minimum Hook (5 Lines)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-2-set-working-directory-and-restrict-http-methods">Step 2: Set Working Directory and Restrict HTTP Methods</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-3-customize-http-responses-and-output-capture">Step 3: Customize HTTP Responses and Output Capture</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-4-pass-dynamic-arguments-to-your-command">Step 4: Pass Dynamic Arguments to Your Command</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-5-pass-values-via-environment-variables">Step 5: Pass Values via Environment Variables</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-6-write-payloads-to-temporary-files">Step 6: Write Payloads to Temporary Files</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-7-secure-the-hook-with-trigger-rules-trigger-rule">Step 7: Secure the Hook with Trigger Rules (trigger-rule)</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#scenario-a-github-gitlab-hmac-sha256-signature-verification">Scenario A: GitHub / GitLab HMAC-SHA256 Signature Verification</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#scenario-b-static-shared-secret-bearer-token">Scenario B: Static Shared Secret / Bearer Token</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#scenario-c-restricting-client-ips-cidr-whitelist">Scenario C: Restricting Client IPs (CIDR Whitelist)</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#3-parameter-extraction-source">3. Parameter Extraction (source)</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#4-trigger-rules-trigger-rule">4. Trigger Rules (trigger-rule)</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-8-choose-synchronous-vs-durable-asynchronous-execution">Step 8: Choose Synchronous vs. Durable Asynchronous Execution</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#rule-combinators">Rule Combinators</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#matcher-types-type">Matcher Types (type)</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#1-value-string-equality">1. value (String Equality)</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#2-regex-pattern-match">2. regex (Pattern Match)</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#3-payload-hmac-sha1-payload-hmac-sha256-payload-hmac-sha512">3. payload-hmac-sha1, payload-hmac-sha256, payload-hmac-sha512</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#4-ip-whitelist">4. ip-whitelist</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#5-scalr-signature">5. scalr-signature</a>
+    <li class="toctree-l4"><a class="reference internal" href="#what-happens-when-async-true">What happens when async: true:</a>
     </li>
         </ul>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-9-use-template-expressions-template">Step 9: Use Template Expressions (-template)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-10-validate-your-configuration">Step 10: Validate Your Configuration</a>
+    </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#5-execution-mode-precedence">5. Execution Mode Precedence</a>
+    <li class="toctree-l2"><a class="reference internal" href="#3-parameter-extraction-reference-source">3. Parameter Extraction Reference (source)</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#6-template-preprocessing-template">6. Template Preprocessing (--template)</a>
+    <li class="toctree-l2"><a class="reference internal" href="#4-trigger-rule-combinators-and-matchers">4. Trigger Rule Combinators and Matchers</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#combinators">Combinators</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#matchers-match">Matchers (match)</a>
+    </li>
+        </ul>
     </li>
     </ul>
                 </li>
@@ -132,18 +146,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="configuration-reference">Configuration Reference<a class="headerlink" href="#configuration-reference" title="Permanent link">&para;</a></h1>
+                <h1 id="configuration-reference-step-by-step-hook-guide">Configuration Reference &amp; Step-by-Step Hook Guide<a class="headerlink" href="#configuration-reference-step-by-step-hook-guide" title="Permanent link">&para;</a></h1>
 <p><a href="../">← Back to Home</a> • <a href="../deployment/">Deployment Guide</a> • <a href="../api/">API Reference</a> • <a href="../operations/">Operations</a></p>
 <hr />
 <h2 id="1-application-configuration-configtoml">1. Application Configuration (<code>config.toml</code>)<a class="headerlink" href="#1-application-configuration-configtoml" title="Permanent link">&para;</a></h2>
-<p><code>webhook-async</code> uses a single TOML file for server and system configuration.</p>
+<p><code>webhook-async</code> uses a single TOML file for server, worker, queue, storage, and security configuration.</p>
 <pre><code class="language-toml">[server]
-host = &quot;0.0.0.0&quot;                        # Bind address
-port = 9000                             # Bind port
+host = &quot;0.0.0.0&quot;                        # Network interface to bind
+port = 9000                             # Listening port
 url_prefix = &quot;hooks&quot;                    # Route prefix (e.g. /hooks/{id})
 max_body_bytes = 10485760               # Maximum request body size (10 MB)
 max_multipart_mem_bytes = 1048576       # Memory buffer limit for multipart parts (1 MB)
-hook_files = [&quot;/etc/webhook/hooks.json&quot;]# Paths to hook definition files
+hook_files = [&quot;/etc/webhook/hooks.json&quot;]# Paths to hook definition files (JSON or YAML)
 hot_reload = true                       # Automatically reload hook files on change
 default_http_methods = [&quot;POST&quot;]         # Fallback methods when hook omits http-methods
 response_headers = [                    # Global response headers added to all replies
@@ -193,33 +207,174 @@ admin_token_env = &quot;WEBHOOK_ADMIN_TOKEN&quot; # Environment variable contain
 # admin_token_file = &quot;/run/secrets/admin_token&quot; # Or file path containing admin token
 </code></pre>
 <hr />
-<h2 id="2-hook-definitions-hooksjson-hooksyaml">2. Hook Definitions (<code>hooks.json</code> / <code>hooks.yaml</code>)<a class="headerlink" href="#2-hook-definitions-hooksjson-hooksyaml" title="Permanent link">&para;</a></h2>
-<p>Hooks can be configured in either JSON or YAML.</p>
-<h3 id="complete-hook-schema">Complete Hook Schema<a class="headerlink" href="#complete-hook-schema" title="Permanent link">&para;</a></h3>
+<h2 id="2-step-by-step-guide-how-to-configure-hooksjson">2. Step-by-Step Guide: How to Configure <code>hooks.json</code><a class="headerlink" href="#2-step-by-step-guide-how-to-configure-hooksjson" title="Permanent link">&para;</a></h2>
+<p>A <code>hooks.json</code> file is a JSON array of hook definition objects. Below is a progressive, step-by-step tutorial on building production-ready hooks.</p>
+<h3 id="step-1-the-absolute-minimum-hook-5-lines">Step 1: The Absolute Minimum Hook (5 Lines)<a class="headerlink" href="#step-1-the-absolute-minimum-hook-5-lines" title="Permanent link">&para;</a></h3>
+<p>At its core, a hook only requires an <code>id</code> and an <code>execute-command</code>.</p>
+<p>Create a file named <code>hooks.json</code>:</p>
 <pre><code class="language-json">[
   {
-    &quot;id&quot;: &quot;github-webhook&quot;,
-    &quot;execute-command&quot;: &quot;/opt/scripts/deploy.sh&quot;,
-    &quot;command-working-directory&quot;: &quot;/opt/repo&quot;,
-    &quot;response-message&quot;: &quot;Deployment initiated.&quot;,
-    &quot;response-headers&quot;: [
-      { &quot;name&quot;: &quot;X-Custom-Header&quot;, &quot;value&quot;: &quot;webhook-processed&quot; }
-    ],
-    &quot;include-command-output-in-response&quot;: false,
-    &quot;include-command-output-in-response-on-error&quot;: true,
+    &quot;id&quot;: &quot;hello&quot;,
+    &quot;execute-command&quot;: &quot;/opt/scripts/hello.sh&quot;
+  }
+]
+</code></pre>
+<p>When you start the server (<code>webhook-async server --hooks hooks.json</code>), calling:</p>
+<pre><code class="language-bash">curl -X POST http://localhost:9000/hooks/hello
+</code></pre>
+<p>will execute <code>/opt/scripts/hello.sh</code> and return <code>200 OK</code>.</p>
+<hr />
+<h3 id="step-2-set-working-directory-and-restrict-http-methods">Step 2: Set Working Directory and Restrict HTTP Methods<a class="headerlink" href="#step-2-set-working-directory-and-restrict-http-methods" title="Permanent link">&para;</a></h3>
+<p>In production, scripts should execute from an explicit directory and only allow intended HTTP verbs (typically <code>POST</code>).</p>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: &quot;deploy-app&quot;,
+    &quot;execute-command&quot;: &quot;/opt/app/scripts/deploy.sh&quot;,
+    &quot;command-working-directory&quot;: &quot;/opt/app&quot;,
+    &quot;http-methods&quot;: [&quot;POST&quot;]
+  }
+]
+</code></pre>
+<p>If an unauthorized method (like <code>GET</code>) is sent, the server immediately returns <code>405 Method Not Allowed</code> with an empty body and does not execute the command.</p>
+<hr />
+<h3 id="step-3-customize-http-responses-and-output-capture">Step 3: Customize HTTP Responses and Output Capture<a class="headerlink" href="#step-3-customize-http-responses-and-output-capture" title="Permanent link">&para;</a></h3>
+<p>By default, the server returns an empty body on success. You can customize the response message or return stdout/stderr from the command directly to the caller.</p>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: &quot;ping-hook&quot;,
+    &quot;execute-command&quot;: &quot;/opt/scripts/check-health.sh&quot;,
+    &quot;command-working-directory&quot;: &quot;/opt/scripts&quot;,
     &quot;http-methods&quot;: [&quot;POST&quot;],
-    &quot;success-http-response-code&quot;: 200,
-    &quot;trigger-rule-mismatch-http-response-code&quot;: 400,
-    &quot;trigger-signature-soft-failures&quot;: false,
-    &quot;incoming-payload-content-type&quot;: &quot;application/json&quot;,
-    &quot;async&quot;: true,
-
+    &quot;response-message&quot;: &quot;Health check started successfully.&quot;,
+    &quot;include-command-output-in-response&quot;: true,
+    &quot;include-command-output-in-response-on-error&quot;: true,
+    &quot;response-headers&quot;: [
+      { &quot;name&quot;: &quot;Content-Type&quot;, &quot;value&quot;: &quot;text/plain&quot; },
+      { &quot;name&quot;: &quot;X-Executed-By&quot;, &quot;value&quot;: &quot;webhook-async&quot; }
+    ]
+  }
+]
+</code></pre>
+<ul>
+<li><code>include-command-output-in-response: true</code>: The server waits for the command to finish and returns the combined stdout and stderr as the HTTP response body.</li>
+<li><code>include-command-output-in-response-on-error: true</code>: If the command exits with a non-zero exit code, the HTTP response status becomes <code>500 Internal Server Error</code> and includes the error output.</li>
+</ul>
+<hr />
+<h3 id="step-4-pass-dynamic-arguments-to-your-command">Step 4: Pass Dynamic Arguments to Your Command<a class="headerlink" href="#step-4-pass-dynamic-arguments-to-your-command" title="Permanent link">&para;</a></h3>
+<p>Webhooks frequently receive payload data (commit IDs, branches, usernames) that must be passed as CLI arguments to your script.</p>
+<p>Use <code>pass-arguments-to-command</code>:</p>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: &quot;deploy-branch&quot;,
+    &quot;execute-command&quot;: &quot;/opt/scripts/deploy.sh&quot;,
+    &quot;command-working-directory&quot;: &quot;/opt/scripts&quot;,
+    &quot;http-methods&quot;: [&quot;POST&quot;],
+    &quot;pass-arguments-to-command&quot;: [
+      {
+        &quot;source&quot;: &quot;payload&quot;,
+        &quot;name&quot;: &quot;ref&quot;
+      },
+      {
+        &quot;source&quot;: &quot;payload&quot;,
+        &quot;name&quot;: &quot;head_commit.id&quot;
+      },
+      {
+        &quot;source&quot;: &quot;url&quot;,
+        &quot;name&quot;: &quot;environment&quot;
+      },
+      {
+        &quot;source&quot;: &quot;request&quot;,
+        &quot;name&quot;: &quot;remote-addr&quot;
+      }
+    ]
+  }
+]
+</code></pre>
+<p>When a request arrives:</p>
+<pre><code class="language-bash">curl -X POST &quot;http://localhost:9000/hooks/deploy-branch?environment=production&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;ref&quot;: &quot;refs/heads/main&quot;, &quot;head_commit&quot;: {&quot;id&quot;: &quot;c759720&quot;}}'
+</code></pre>
+<p><code>webhook-async</code> invokes:</p>
+<pre><code class="language-bash">/opt/scripts/deploy.sh &quot;refs/heads/main&quot; &quot;c759720&quot; &quot;production&quot; &quot;127.0.0.1&quot;
+</code></pre>
+<blockquote>
+<p><strong>Security Note</strong>: <code>webhook-async</code> executes commands via direct process invocation (<code>execve</code>). Arguments are passed directly in the argv array and are <strong>never</strong> interpolated into a shell string, eliminating shell injection vulnerabilities.</p>
+</blockquote>
+<hr />
+<h3 id="step-5-pass-values-via-environment-variables">Step 5: Pass Values via Environment Variables<a class="headerlink" href="#step-5-pass-values-via-environment-variables" title="Permanent link">&para;</a></h3>
+<p>Passing sensitive information or large payloads through environment variables is often cleaner than positional CLI arguments.</p>
+<p>Use <code>pass-environment-to-command</code>:</p>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: &quot;notify-slack&quot;,
+    &quot;execute-command&quot;: &quot;/opt/scripts/notify.sh&quot;,
+    &quot;pass-environment-to-command&quot;: [
+      {
+        &quot;source&quot;: &quot;payload&quot;,
+        &quot;name&quot;: &quot;pusher.name&quot;,
+        &quot;envname&quot;: &quot;DEPLOY_AUTHOR&quot;
+      },
+      {
+        &quot;source&quot;: &quot;header&quot;,
+        &quot;name&quot;: &quot;X-GitHub-Delivery&quot;,
+        &quot;envname&quot;: &quot;DELIVERY_ID&quot;
+      },
+      {
+        &quot;source&quot;: &quot;payload&quot;,
+        &quot;name&quot;: &quot;repository.name&quot;
+      }
+    ]
+  }
+]
+</code></pre>
+<p>Inside <code>/opt/scripts/notify.sh</code>, you can read:</p>
+<pre><code class="language-bash">echo &quot;Author: $DEPLOY_AUTHOR&quot;
+echo &quot;Delivery ID: $DELIVERY_ID&quot;
+echo &quot;Repository: $HOOK_repository_name&quot;   # Defaults to HOOK_&lt;name&gt; when envname is omitted
+</code></pre>
+<hr />
+<h3 id="step-6-write-payloads-to-temporary-files">Step 6: Write Payloads to Temporary Files<a class="headerlink" href="#step-6-write-payloads-to-temporary-files" title="Permanent link">&para;</a></h3>
+<p>When tools (like <code>kubectl</code>, <code>ansible</code>, or <code>terraform</code>) require a file input, use <code>pass-file-to-command</code>. <code>webhook-async</code> creates a temporary file before execution, passes its absolute path in an environment variable, and automatically deletes it when execution finishes.</p>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: &quot;import-config&quot;,
+    &quot;execute-command&quot;: &quot;/opt/scripts/apply-config.sh&quot;,
+    &quot;command-working-directory&quot;: &quot;/opt/scripts&quot;,
+    &quot;pass-file-to-command&quot;: [
+      {
+        &quot;source&quot;: &quot;entire-payload&quot;,
+        &quot;envname&quot;: &quot;CONFIG_FILE&quot;
+      },
+      {
+        &quot;source&quot;: &quot;payload&quot;,
+        &quot;name&quot;: &quot;certificates.ssl_crt&quot;,
+        &quot;envname&quot;: &quot;CERT_PATH&quot;,
+        &quot;base64decode&quot;: true
+      }
+    ]
+  }
+]
+</code></pre>
+<p>Inside <code>/opt/scripts/apply-config.sh</code>:</p>
+<pre><code class="language-bash">echo &quot;Applying config from: $CONFIG_FILE&quot;
+kubectl apply -f &quot;$CONFIG_FILE&quot;
+</code></pre>
+<hr />
+<h3 id="step-7-secure-the-hook-with-trigger-rules-trigger-rule">Step 7: Secure the Hook with Trigger Rules (<code>trigger-rule</code>)<a class="headerlink" href="#step-7-secure-the-hook-with-trigger-rules-trigger-rule" title="Permanent link">&para;</a></h3>
+<p>Never expose unauthenticated webhooks to the public internet. Use <code>trigger-rule</code> to enforce signature verification, tokens, IP whitelists, or branch filters.</p>
+<h4 id="scenario-a-github-gitlab-hmac-sha256-signature-verification">Scenario A: GitHub / GitLab HMAC-SHA256 Signature Verification<a class="headerlink" href="#scenario-a-github-gitlab-hmac-sha256-signature-verification" title="Permanent link">&para;</a></h4>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: &quot;github-deploy&quot;,
+    &quot;execute-command&quot;: &quot;/opt/scripts/deploy.sh&quot;,
+    &quot;http-methods&quot;: [&quot;POST&quot;],
     &quot;trigger-rule&quot;: {
       &quot;and&quot;: [
         {
           &quot;match&quot;: {
             &quot;type&quot;: &quot;payload-hmac-sha256&quot;,
-            &quot;secret&quot;: &quot;{{ getenv \&quot;GITHUB_SECRET\&quot; }}&quot;,
+            &quot;secret&quot;: &quot;{{ getenv \&quot;GITHUB_WEBHOOK_SECRET\&quot; }}&quot;,
             &quot;parameter&quot;: {
               &quot;source&quot;: &quot;header&quot;,
               &quot;name&quot;: &quot;X-Hub-Signature-256&quot;
@@ -237,189 +392,221 @@ admin_token_env = &quot;WEBHOOK_ADMIN_TOKEN&quot; # Environment variable contain
           }
         }
       ]
-    },
-
-    &quot;pass-arguments-to-command&quot;: [
-      { &quot;source&quot;: &quot;payload&quot;, &quot;name&quot;: &quot;head_commit.id&quot; },
-      { &quot;source&quot;: &quot;payload&quot;, &quot;name&quot;: &quot;pusher.name&quot; },
-      { &quot;source&quot;: &quot;request&quot;, &quot;name&quot;: &quot;remote-addr&quot; }
-    ],
-
-    &quot;pass-environment-to-command&quot;: [
-      {
-        &quot;source&quot;: &quot;payload&quot;,
-        &quot;name&quot;: &quot;repository.name&quot;,
-        &quot;envname&quot;: &quot;REPO_NAME&quot;
-      },
-      {
-        &quot;source&quot;: &quot;header&quot;,
-        &quot;name&quot;: &quot;X-GitHub-Delivery&quot;,
-        &quot;envname&quot;: &quot;DELIVERY_ID&quot;
+    }
+  }
+]
+</code></pre>
+<h4 id="scenario-b-static-shared-secret-bearer-token">Scenario B: Static Shared Secret / Bearer Token<a class="headerlink" href="#scenario-b-static-shared-secret-bearer-token" title="Permanent link">&para;</a></h4>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: &quot;internal-backup&quot;,
+    &quot;execute-command&quot;: &quot;/opt/scripts/run-backup.sh&quot;,
+    &quot;trigger-rule&quot;: {
+      &quot;match&quot;: {
+        &quot;type&quot;: &quot;value&quot;,
+        &quot;value&quot;: &quot;{{ getenv \&quot;BACKUP_SECRET_TOKEN\&quot; }}&quot;,
+        &quot;parameter&quot;: {
+          &quot;source&quot;: &quot;header&quot;,
+          &quot;name&quot;: &quot;X-Webhook-Token&quot;
+        }
       }
-    ],
-
-    &quot;pass-file-to-command&quot;: [
-      {
-        &quot;source&quot;: &quot;entire-payload&quot;,
-        &quot;envname&quot;: &quot;PAYLOAD_FILE&quot;
+    }
+  }
+]
+</code></pre>
+<h4 id="scenario-c-restricting-client-ips-cidr-whitelist">Scenario C: Restricting Client IPs (CIDR Whitelist)<a class="headerlink" href="#scenario-c-restricting-client-ips-cidr-whitelist" title="Permanent link">&para;</a></h4>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: &quot;office-only-hook&quot;,
+    &quot;execute-command&quot;: &quot;/opt/scripts/restart.sh&quot;,
+    &quot;trigger-rule&quot;: {
+      &quot;match&quot;: {
+        &quot;type&quot;: &quot;ip-whitelist&quot;,
+        &quot;ip-whitelist&quot;: &quot;192.168.1.0/24 10.0.0.50 2001:db8::/32&quot;
       }
-    ],
-
-    &quot;parse-parameters-as-json&quot;: [
-      {
-        &quot;source&quot;: &quot;payload&quot;,
-        &quot;name&quot;: &quot;custom_data&quot;
-      }
-    ]
+    }
   }
 ]
 </code></pre>
 <hr />
-<h2 id="3-parameter-extraction-source">3. Parameter Extraction (<code>source</code>)<a class="headerlink" href="#3-parameter-extraction-source" title="Permanent link">&para;</a></h2>
-<p>Parameters can be extracted and mapped to command arguments, environment variables, files, or trigger rule checks.</p>
+<h3 id="step-8-choose-synchronous-vs-durable-asynchronous-execution">Step 8: Choose Synchronous vs. Durable Asynchronous Execution<a class="headerlink" href="#step-8-choose-synchronous-vs-durable-asynchronous-execution" title="Permanent link">&para;</a></h3>
+<p>By default, <code>webhook-async</code> operates in legacy synchronous mode (the HTTP request waits until the command finishes). </p>
+<p>For long-running tasks (CI builds, deployments, backups), enable <strong>asynchronous mode</strong>:</p>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: &quot;async-ci-build&quot;,
+    &quot;execute-command&quot;: &quot;/opt/scripts/build-and-test.sh&quot;,
+    &quot;command-working-directory&quot;: &quot;/opt/builds&quot;,
+    &quot;async&quot;: true,
+    &quot;response-message&quot;: &quot;Job enqueued for background processing.&quot;
+  }
+]
+</code></pre>
+<h4 id="what-happens-when-async-true">What happens when <code>async: true</code>:<a class="headerlink" href="#what-happens-when-async-true" title="Permanent link">&para;</a></h4>
+<ol>
+<li>The server validates the trigger rules and signature.</li>
+<li>The server serializes the command and snapshot into the durable storage queue (SQLite, Valkey, or Redis).</li>
+<li>The server immediately returns <strong><code>HTTP 202 Accepted</code></strong> with a tracking JSON payload:
+   <code>json
+   {
+     "job_id": "018d9f10-1a2b-7c3d-8e4f-5a6b7c8d9e0f",
+     "status": "queued",
+     "message": "Job enqueued for background processing."
+   }</code></li>
+<li>Background workers claim the job, execute it, heartbeat lease extensions, and handle automatic exponential backoff retries if transient errors occur.</li>
+</ol>
+<hr />
+<h3 id="step-9-use-template-expressions-template">Step 9: Use Template Expressions (<code>-template</code>)<a class="headerlink" href="#step-9-use-template-expressions-template" title="Permanent link">&para;</a></h3>
+<p>To avoid hardcoding sensitive secrets or environment-dependent paths directly inside <code>hooks.json</code>, start <code>webhook-async</code> with the <code>-template</code> flag.</p>
+<p>Supported template functions:
+- <code>{{ getenv "VAR_NAME" }}</code>: Reads environment variable <code>VAR_NAME</code> (returns empty string if unset).
+- <code>{{ getenv "VAR_NAME" "default_value" }}</code>: Reads environment variable with fallback default.
+- <code>{{ cat "/path/to/file" }}</code>: Reads file content, trimming trailing newlines.
+- <code>{{ credential "SECRET_NAME" }}</code>: Reads <code>/run/credentials/$SECRET_NAME</code> (systemd credential directory), with fallback to environment variable.
+- <code>{{ value | js }}</code>: Escapes string safely for JSON string embedding.</p>
+<p>Example:</p>
+<pre><code class="language-json">[
+  {
+    &quot;id&quot;: &quot;secure-hook&quot;,
+    &quot;execute-command&quot;: &quot;/opt/scripts/run.sh&quot;,
+    &quot;trigger-rule&quot;: {
+      &quot;match&quot;: {
+        &quot;type&quot;: &quot;payload-hmac-sha256&quot;,
+        &quot;secret&quot;: &quot;{{ cat \&quot;/etc/secrets/webhook_hmac.key\&quot; }}&quot;,
+        &quot;parameter&quot;: {
+          &quot;source&quot;: &quot;header&quot;,
+          &quot;name&quot;: &quot;X-Signature-256&quot;
+        }
+      }
+    }
+  }
+]
+</code></pre>
+<hr />
+<h3 id="step-10-validate-your-configuration">Step 10: Validate Your Configuration<a class="headerlink" href="#step-10-validate-your-configuration" title="Permanent link">&para;</a></h3>
+<p>Before deploying to production or reloading the service, validate your files with the built-in validator:</p>
+<pre><code class="language-bash"># Validate standard JSON/YAML hooks
+webhook-async config validate --hooks /etc/webhook/hooks.json
+
+# Validate templated hooks
+webhook-async config validate --template --hooks /etc/webhook/hooks.json
+</code></pre>
+<p>If errors are present (invalid rule depth, missing required fields, syntax typos), the command prints line-specific diagnostics with non-zero exit code.</p>
+<hr />
+<h2 id="3-parameter-extraction-reference-source">3. Parameter Extraction Reference (<code>source</code>)<a class="headerlink" href="#3-parameter-extraction-reference-source" title="Permanent link">&para;</a></h2>
+<p>Parameters can be extracted from any part of the HTTP request and mapped into command arguments, environment variables, temporary files, or trigger rule checks.</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">Source</th>
 <th style="text-align: left;">Description</th>
-<th style="text-align: left;">Example</th>
+<th style="text-align: left;">Example Specification</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>header</code></td>
-<td style="text-align: left;">Canonical MIME HTTP request header.</td>
+<td style="text-align: left;">Canonical MIME HTTP request header. Case-insensitive header lookup.</td>
 <td style="text-align: left;"><code>{"source": "header", "name": "X-GitHub-Event"}</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>url</code> / <code>query</code></td>
-<td style="text-align: left;">URL query parameter.</td>
-<td style="text-align: left;"><code>{"source": "url", "name": "branch"}</code></td>
+<td style="text-align: left;">URL query parameter string.</td>
+<td style="text-align: left;"><code>{"source": "url", "name": "environment"}</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>payload</code></td>
-<td style="text-align: left;">Body value from JSON, XML, or Form payload. Supports dot notation.</td>
-<td style="text-align: left;"><code>{"source": "payload", "name": "commit.author.email"}</code></td>
+<td style="text-align: left;">Body value from JSON, XML, or Form payload. Supports dot notation (<code>a.b.c</code>) and array indices (<code>items.0.id</code>).</td>
+<td style="text-align: left;"><code>{"source": "payload", "name": "repository.name"}</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>raw-request-body</code></td>
-<td style="text-align: left;">The unparsed UTF-8 body string.</td>
+<td style="text-align: left;">The unparsed raw UTF-8 request body string.</td>
 <td style="text-align: left;"><code>{"source": "raw-request-body"}</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>request</code></td>
-<td style="text-align: left;">Request metadata (<code>remote-addr</code>, <code>method</code>).</td>
+<td style="text-align: left;">Request metadata: <code>remote-addr</code> (client IP) or <code>method</code> (HTTP verb).</td>
 <td style="text-align: left;"><code>{"source": "request", "name": "remote-addr"}</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>string</code></td>
-<td style="text-align: left;">Static literal string.</td>
+<td style="text-align: left;">Static literal string value.</td>
 <td style="text-align: left;"><code>{"source": "string", "name": "production"}</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>entire-payload</code></td>
-<td style="text-align: left;">Full raw body written to temporary file (<code>pass-file-to-command</code>).</td>
+<td style="text-align: left;">The full raw body written to a temporary file (<code>pass-file-to-command</code>).</td>
 <td style="text-align: left;"><code>{"source": "entire-payload", "envname": "BODY_FILE"}</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>entire-headers</code></td>
-<td style="text-align: left;">JSON map of all headers.</td>
+<td style="text-align: left;">JSON map of all HTTP request headers.</td>
 <td style="text-align: left;"><code>{"source": "entire-headers", "envname": "HEADERS_JSON"}</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>entire-query</code></td>
-<td style="text-align: left;">JSON map of all query parameters.</td>
+<td style="text-align: left;">JSON map of all URL query parameters.</td>
 <td style="text-align: left;"><code>{"source": "entire-query", "envname": "QUERY_JSON"}</code></td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2 id="4-trigger-rules-trigger-rule">4. Trigger Rules (<code>trigger-rule</code>)<a class="headerlink" href="#4-trigger-rules-trigger-rule" title="Permanent link">&para;</a></h2>
-<p>Trigger rules determine whether the webhook is allowed to run.</p>
-<h3 id="rule-combinators">Rule Combinators<a class="headerlink" href="#rule-combinators" title="Permanent link">&para;</a></h3>
+<h2 id="4-trigger-rule-combinators-and-matchers">4. Trigger Rule Combinators and Matchers<a class="headerlink" href="#4-trigger-rule-combinators-and-matchers" title="Permanent link">&para;</a></h2>
+<p>Trigger rules determine whether the incoming request is authorized to execute the command.</p>
+<h3 id="combinators">Combinators<a class="headerlink" href="#combinators" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>and</code>: Array of rules; all must evaluate to <code>true</code>.</li>
-<li><code>or</code>: Array of rules; passes if any rule evaluates to <code>true</code>.</li>
-<li><code>not</code>: Inverts the result of a child rule.</li>
+<li><code>and</code>: Array of rules; all child rules must evaluate to <code>true</code>.</li>
+<li><code>or</code>: Array of rules; passes if <strong>any</strong> child rule evaluates to <code>true</code>.</li>
+<li><code>not</code>: Inverts the boolean result of a child rule.</li>
 </ul>
-<h3 id="matcher-types-type">Matcher Types (<code>type</code>)<a class="headerlink" href="#matcher-types-type" title="Permanent link">&para;</a></h3>
-<h4 id="1-value-string-equality">1. <code>value</code> (String Equality)<a class="headerlink" href="#1-value-string-equality" title="Permanent link">&para;</a></h4>
-<p>Constant-time equality comparison:</p>
-<pre><code class="language-json">{
-  &quot;match&quot;: {
-    &quot;type&quot;: &quot;value&quot;,
-    &quot;value&quot;: &quot;refs/heads/main&quot;,
-    &quot;parameter&quot;: { &quot;source&quot;: &quot;payload&quot;, &quot;name&quot;: &quot;ref&quot; }
-  }
-}
-</code></pre>
-<h4 id="2-regex-pattern-match">2. <code>regex</code> (Pattern Match)<a class="headerlink" href="#2-regex-pattern-match" title="Permanent link">&para;</a></h4>
-<p>Matches value against a regular expression:</p>
-<pre><code class="language-json">{
-  &quot;match&quot;: {
-    &quot;type&quot;: &quot;regex&quot;,
-    &quot;regex&quot;: &quot;^v[0-9]+\\.[0-9]+\\.[0-9]+$&quot;,
-    &quot;parameter&quot;: { &quot;source&quot;: &quot;payload&quot;, &quot;name&quot;: &quot;ref&quot; }
-  }
-}
-</code></pre>
-<h4 id="3-payload-hmac-sha1-payload-hmac-sha256-payload-hmac-sha512">3. <code>payload-hmac-sha1</code>, <code>payload-hmac-sha256</code>, <code>payload-hmac-sha512</code><a class="headerlink" href="#3-payload-hmac-sha1-payload-hmac-sha256-payload-hmac-sha512" title="Permanent link">&para;</a></h4>
-<p>Constant-time HMAC hex verification with secret:</p>
-<pre><code class="language-json">{
-  &quot;match&quot;: {
-    &quot;type&quot;: &quot;payload-hmac-sha256&quot;,
-    &quot;secret&quot;: &quot;{{ getenv \&quot;WEBHOOK_SECRET\&quot; }}&quot;,
-    &quot;parameter&quot;: { &quot;source&quot;: &quot;header&quot;, &quot;name&quot;: &quot;X-Hub-Signature-256&quot; }
-  }
-}
-</code></pre>
-<p><em>Supports optional prefix format (e.g. <code>sha256=abcdef...</code>) and comma-separated multiple signatures.</em></p>
-<h4 id="4-ip-whitelist">4. <code>ip-whitelist</code><a class="headerlink" href="#4-ip-whitelist" title="Permanent link">&para;</a></h4>
-<p>Verifies client IP against whitespace-delimited IPs or CIDR blocks:</p>
-<pre><code class="language-json">{
-  &quot;match&quot;: {
-    &quot;type&quot;: &quot;ip-whitelist&quot;,
-    &quot;ip-whitelist&quot;: &quot;192.168.1.0/24 10.0.0.1 2001:db8::/32&quot;
-  }
-}
-</code></pre>
-<h4 id="5-scalr-signature">5. <code>scalr-signature</code><a class="headerlink" href="#5-scalr-signature" title="Permanent link">&para;</a></h4>
-<p>Validates Scalr-compliant HMAC-SHA1 timestamp and signature:</p>
-<pre><code class="language-json">{
-  &quot;match&quot;: {
-    &quot;type&quot;: &quot;scalr-signature&quot;,
-    &quot;secret&quot;: &quot;{{ getenv \&quot;SCALR_KEY\&quot; }}&quot;
-  }
-}
-</code></pre>
-<hr />
-<h2 id="5-execution-mode-precedence">5. Execution Mode Precedence<a class="headerlink" href="#5-execution-mode-precedence" title="Permanent link">&para;</a></h2>
-<p>Execution mode is resolved using this strict precedence hierarchy:</p>
-<pre><code>                  ┌───────────────────────────────┐
-                  │ Is hook &quot;async&quot; specified?    │
-                  └───────────────┬───────────────┘
-                                  │
-                 ┌────────────────┴────────────────┐
-                 ▼ YES                             ▼ NO
-     ┌───────────────────────┐         ┌───────────────────────────────┐
-     │ Use hook.async value  │         │ CLI flag --async / --sync?    │
-     │ (true/false)          │         └───────────────┬───────────────┘
-     └───────────────────────┘                         │
-                                      ┌────────────────┴────────────────┐
-                                      ▼ Set                             ▼ None
-                           ┌─────────────────────┐          ┌───────────────────────┐
-                           │ Use CLI flag mode   │          │ Default: SYNCHRONOUS  │
-                           └─────────────────────┘          └───────────────────────┘
-</code></pre>
-<hr />
-<h2 id="6-template-preprocessing-template">6. Template Preprocessing (<code>--template</code>)<a class="headerlink" href="#6-template-preprocessing-template" title="Permanent link">&para;</a></h2>
-<p>Start the server or validation with <code>--template</code> to enable dynamic configuration preprocessing:</p>
-<ul>
-<li><code>{{ getenv "VAR_NAME" "fallback" }}</code>: Injects environment variable with optional default.</li>
-<li><code>{{ cat "/path/to/file" }}</code>: Reads file content and trims trailing newline.</li>
-<li><code>{{ credential "secret_name" }}</code>: Reads systemd <code>$CREDENTIALS_DIRECTORY</code> file with fallback to env var.</li>
-<li><code>{{ ... | js }}</code>: Encodes value as a safe JSON string literal.</li>
-</ul>
+<h3 id="matchers-match">Matchers (<code>match</code>)<a class="headerlink" href="#matchers-match" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Matcher Type</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Required Fields</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>value</code></td>
+<td style="text-align: left;">Constant-time string equality comparison.</td>
+<td style="text-align: left;"><code>value</code>, <code>parameter</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>regex</code></td>
+<td style="text-align: left;">Regular expression match against parameter value.</td>
+<td style="text-align: left;"><code>regex</code>, <code>parameter</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>payload-hmac-sha1</code></td>
+<td style="text-align: left;">HMAC-SHA1 verification against raw request body.</td>
+<td style="text-align: left;"><code>secret</code>, <code>parameter</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>payload-hmac-sha256</code></td>
+<td style="text-align: left;">HMAC-SHA256 verification against raw request body.</td>
+<td style="text-align: left;"><code>secret</code>, <code>parameter</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>payload-hmac-sha512</code></td>
+<td style="text-align: left;">HMAC-SHA512 verification against raw request body.</td>
+<td style="text-align: left;"><code>secret</code>, <code>parameter</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ip-whitelist</code></td>
+<td style="text-align: left;">Matches client IP against whitespace-delimited IPs/CIDRs.</td>
+<td style="text-align: left;"><code>ip-whitelist</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>scalr-signature</code></td>
+<td style="text-align: left;">Validates Scalr-compliant HMAC-SHA1 timestamp and signature.</td>
+<td style="text-align: left;"><code>secret</code></td>
+</tr>
+</tbody>
+</table>
               
             </div>
           </div><footer>
