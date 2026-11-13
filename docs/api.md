@@ -1,11 +1,6 @@
----
-title: REST API & Web UI
-layout: post
----
-
 # API Reference & Usage
 
-[← Back to Home](index.html) • [Deployment Guide](deployment.html) • [Configuration Reference](configuration.html) • [Operations](operations.html)
+[← Back to Home](index.md) • [Deployment Guide](deployment.md) • [Configuration Reference](configuration.md) • [Operations](operations.md)
 
 ---
 

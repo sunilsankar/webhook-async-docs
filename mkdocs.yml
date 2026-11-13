@@ -1,0 +1,31 @@
+site_name: webhook-async
+site_description: Standalone Rust webhook receiver and asynchronous job engine
+site_author: Sunil Sankar
+site_url: https://sunilsankar.github.io/webhook-async-docs/
+repo_url: https://github.com/sunilsankar/webhook-async
+repo_name: sunilsankar/webhook-async
+
+theme:
+  name: readthedocs
+  highlightjs: true
+  hljs_languages:
+    - bash
+    - rust
+    - toml
+    - yaml
+    - json
+
+nav:
+  - Overview: index.md
+  - Deployment: deployment.md
+  - Configuration: configuration.md
+  - REST API & OpenAPI: api.md
+  - Operations & Backup: operations.md
+  - Security: security.md
+  - Troubleshooting: troubleshooting.md
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true

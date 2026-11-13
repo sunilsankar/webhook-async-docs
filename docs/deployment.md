@@ -1,23 +1,18 @@
----
-title: Deployment Guide
-layout: post
----
-
 # Deployment Guide
 
-[← Back to Home](index.html) • [Configuration Reference](configuration.html) • [API Reference](api.html) • [Operations](operations.html)
+[← Back to Home](index.md) • [Configuration Reference](configuration.md) • [API Reference](api.md) • [Operations](operations.md)
 
 ---
 
 ## Table of Contents
-1. [Linux Bare Metal / VM (systemd)](#linux-bare-metal--vm-systemd)
-2. [Docker & Docker Compose](#docker--docker-compose)
+1. [Linux Bare Metal / VM (systemd)](#linux-bare-metal-vm-systemd)
+2. [Docker & Docker Compose](#docker-docker-compose)
 3. [Kubernetes](#kubernetes)
 4. [macOS (launchd)](#macos-launchd)
 5. [Windows Server (NSSM)](#windows-server-nssm)
 6. [Distributed Scale-Out (Dedicated Workers)](#distributed-scale-out-dedicated-workers)
-7. [Reverse Proxy & Ingress (Caddy / Nginx)](#reverse-proxy--ingress-caddy--nginx)
-8. [Direct TLS & Unix Sockets](#direct-tls--unix-sockets)
+7. [Reverse Proxy & Ingress (Caddy / Nginx)](#reverse-proxy-ingress-caddy-nginx)
+8. [Direct TLS & Unix Sockets](#direct-tls-unix-sockets)
 
 ---
 

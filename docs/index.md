@@ -1,9 +1,3 @@
----
-title: Introduction
-layout: home
-permalink: /
----
-
 # Webhook-Async Documentation
 
 > **A standalone Rust webhook receiver and asynchronous job engine.**
@@ -116,9 +110,9 @@ refs/heads/main 05dc3f3
 
 ## Documentation Navigation
 
-- [**Deployment Guide**](deployment.html): Step-by-step guides for Linux (systemd), Docker Compose, Kubernetes, macOS (launchd), Windows, and Reverse Proxies (Caddy/Nginx).
-- [**Configuration Reference**](configuration.html): Complete schema for `config.toml`, hook definitions, trigger rules, parameter extraction, and template preprocessing.
-- [**API Reference**](api.html): Complete documentation for receiver endpoints, health checks, administrative REST API (`/api/v1/*`), and SSE real-time stream.
-- [**Operations & Backups**](operations.html): Signal handling, zero-downtime hot reload, non-blocking SQLite hot backups (`VACUUM INTO`), logging, and disaster recovery.
-- [**Security Hardening**](security.html): Threat model, sandboxing, timing-attack prevention, and secret management.
-- [**Troubleshooting Matrix**](troubleshooting.html): Common operational issues and fixes.
+- [**Deployment Guide**](deployment.md): Step-by-step guides for Linux (systemd), Docker Compose, Kubernetes, macOS (launchd), Windows, and Reverse Proxies (Caddy/Nginx).
+- [**Configuration Reference**](configuration.md): Complete schema for `config.toml`, hook definitions, trigger rules, parameter extraction, and template preprocessing.
+- [**API Reference**](api.md): Complete documentation for receiver endpoints, health checks, administrative REST API (`/api/v1/*`), and SSE real-time stream.
+- [**Operations & Backups**](operations.md): Signal handling, zero-downtime hot reload, non-blocking SQLite hot backups (`VACUUM INTO`), logging, and disaster recovery.
+- [**Security Hardening**](security.md): Threat model, sandboxing, timing-attack prevention, and secret management.
+- [**Troubleshooting Matrix**](troubleshooting.md): Common operational issues and fixes.
