@@ -1,0 +1,18 @@
+title: Webhook-Async Documentation
+description: Standalone Rust webhook receiver and asynchronous job engine
+theme: jekyll-theme-cayman
+show_downloads: true
+github:
+  repository_url: https://github.com/sunilsankar/webhook-async
+  is_project_page: true
+google_analytics:
+
+# Navigation
+header_pages:
+  - index.md
+  - deployment.md
+  - configuration.md
+  - api.md
+  - operations.md
+  - security.md
+  - troubleshooting.md

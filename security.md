@@ -1,0 +1,78 @@
+# Security Architecture & Hardening
+
+[← Back to Home](index.html) • [Deployment Guide](deployment.html) • [Configuration Reference](configuration.html) • [API Reference](api.html)
+
+---
+
+## 1. Threat Model & Principles
+
+`webhook-async` receives untrusted payloads from the public Internet and executes administrative commands on internal infrastructure. Security is the paramount operational constraint.
+
+### Foundational Principles
+- **Memory Safety**: Written entirely in 100% safe Rust. No buffer overflows, use-after-free, or data races.
+- **Fail-Secure Defaults**: Administrative endpoints require explicit token configuration. If unconfigured, access is rejected with `503 Service Unavailable`.
+- **Zero Shell Interpolation**: Commands are executed directly via OS system calls (`execve`) with discrete argument vectors. Payload strings are **never** evaluated by a shell interpreter.
+- **Constant-Time Verification**: All cryptographic signatures and authentication tokens are validated in constant time to prevent timing side-channel attacks.
+- **Process Sandboxing**: Command executions are assigned discrete process groups (`-pgid`), bounded by strict execution timeouts, and killed with `SIGKILL` on timeout or cancellation.
+
+---
+
+## 2. Process Execution Security
+
+### Direct Process Execution vs Shell Injection
+Vulnerable systems often run webhook commands like this:
+```bash
+# VULNERABLE:
+sh -c "deploy.sh --branch $BRANCH"  # Payload: "; rm -rf / ;"
+```
+
+In `webhook-async`, commands are invoked directly:
+```rust
+let mut cmd = tokio::process::Command::new(&spec.executable);
+cmd.args(&spec.args);
+cmd.envs(&spec.env);
+```
+Payload contents can only occupy designated discrete argument elements or environment variables. It is mathematically impossible for a payload value to inject additional command flags or shell operators.
+
+### Process Group Sandboxing
+1. Child processes are launched in their own process group (`process_group(0)`).
+2. If execution exceeds `queue.default_timeout_seconds` or an operator cancels the task, `webhook-async` sends `SIGKILL` to `-pgid`.
+3. This guarantees that background subprocesses, sub-shells, or detached child processes are terminated immediately rather than orphaned.
+
+---
+
+## 3. Cryptographic Verification & Signatures
+
+Public webhooks should always enforce cryptographic signature verification using provider secrets.
+
+Supported HMAC verification matchers:
+- `payload-hmac-sha256` (GitHub `X-Hub-Signature-256`, Stripe)
+- `payload-hmac-sha1` (GitHub legacy `X-Hub-Signature`, Bitbucket)
+- `payload-hmac-sha512`
+- `scalr-signature` (HMAC-SHA1 Date + Body verification)
+
+### Constant-Time Implementation
+All HMAC digests and tokens are verified using `subtle::ConstantTimeEq`:
+```rust
+mac.verify_slice(&candidate_mac).map_err(...)
+```
+Timing attacks attempting to deduce secrets byte-by-byte are mathematically defeated.
+
+---
+
+## 4. Web Management UI Security
+
+- **Session Tokens**: Login issues a cryptographically random UUID session token stored in an `HttpOnly`, `SameSite=Lax` cookie.
+- **CSRF Tokens**: Every mutation (Retry, Cancel, Logout) strictly requires a matching `X-CSRF-Token` header or form field.
+- **Strict HTML Escaping**: Askama templates strictly escape all user-supplied variables by default, defeating Cross-Site Scripting (XSS).
+- **Isolated Binding**: The management UI can be bound to a separate IP/port (e.g. `127.0.0.1:9001`) away from the public webhook receiver.
+
+---
+
+## 5. Security Checklist
+
+- [ ] Run `webhook-async` as an unprivileged dedicated service account (`webhook`).
+- [ ] Set `WEBHOOK_ADMIN_TOKEN` with at least 32 cryptographically random characters.
+- [ ] Enforce HMAC signature validation on all public hooks.
+- [ ] Bound execution timeouts (`queue.default_timeout_seconds`).
+- [ ] Use direct TLS (`--secure`) or an authenticated reverse proxy (Nginx/Caddy) with HTTPS.
