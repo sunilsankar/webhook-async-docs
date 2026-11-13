@@ -30,7 +30,7 @@ sudo chown -R webhook:webhook /var/lib/webhook-async /var/log/webhook-async
 ### 2. Install Binary
 Download from [GitHub Releases](https://github.com/sunilsankar/webhook-async/releases):
 ```bash
-sudo curl -L -o /usr/local/bin/webhook-async https://github.com/sunilsankar/webhook-async/releases/download/v0.1.0-beta/webhook-async-linux-amd64
+sudo curl -L -o /usr/local/bin/webhook-async https://github.com/sunilsankar/webhook-async/releases/download/v1.2.0-beta/webhook-async-linux-amd64
 sudo chmod +x /usr/local/bin/webhook-async
 ```
 
@@ -140,7 +140,7 @@ services:
       - webhook-net
 
   webhook-api:
-    image: ghcr.io/sunilsankar/webhook-async:v0.1.0-beta
+    image: ghcr.io/sunilsankar/webhook-async:v1.2.0-beta
     restart: unless-stopped
     command: ["server", "--config", "/config/config.toml", "--async"]
     ports:
@@ -157,7 +157,7 @@ services:
       - webhook-net
 
   webhook-worker:
-    image: ghcr.io/sunilsankar/webhook-async:v0.1.0-beta
+    image: ghcr.io/sunilsankar/webhook-async:v1.2.0-beta
     restart: unless-stopped
     command: ["worker", "--config", "/config/config.toml"]
     environment:
@@ -246,7 +246,7 @@ spec:
     spec:
       containers:
         - name: receiver
-          image: ghcr.io/sunilsankar/webhook-async:v0.1.0-beta
+          image: ghcr.io/sunilsankar/webhook-async:v1.2.0-beta
           args: ["server", "--config", "/etc/webhook/config.toml", "--async"]
           ports:
             - containerPort: 9000
@@ -295,7 +295,7 @@ spec:
 
 ### 1. Install Binary
 ```bash
-curl -L -o /usr/local/bin/webhook-async https://github.com/sunilsankar/webhook-async/releases/download/v0.1.0-beta/webhook-async-macos-arm64
+curl -L -o /usr/local/bin/webhook-async https://github.com/sunilsankar/webhook-async/releases/download/v1.2.0-beta/webhook-async-macos-arm64
 chmod +x /usr/local/bin/webhook-async
 ```
 

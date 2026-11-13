@@ -178,7 +178,7 @@ sudo chown -R webhook:webhook /var/lib/webhook-async /var/log/webhook-async
 </code></pre>
 <h3 id="2-install-binary">2. Install Binary<a class="headerlink" href="#2-install-binary" title="Permanent link">&para;</a></h3>
 <p>Download from <a href="https://github.com/sunilsankar/webhook-async/releases">GitHub Releases</a>:</p>
-<pre><code class="language-bash">sudo curl -L -o /usr/local/bin/webhook-async https://github.com/sunilsankar/webhook-async/releases/download/v0.1.0-beta/webhook-async-linux-amd64
+<pre><code class="language-bash">sudo curl -L -o /usr/local/bin/webhook-async https://github.com/sunilsankar/webhook-async/releases/download/v1.2.0-beta/webhook-async-linux-amd64
 sudo chmod +x /usr/local/bin/webhook-async
 </code></pre>
 <h3 id="3-create-configuration-etcwebhook-asyncconfigtoml">3. Create Configuration (<code>/etc/webhook-async/config.toml</code>)<a class="headerlink" href="#3-create-configuration-etcwebhook-asyncconfigtoml" title="Permanent link">&para;</a></h3>
@@ -276,7 +276,7 @@ services:
       - webhook-net
 
   webhook-api:
-    image: ghcr.io/sunilsankar/webhook-async:v0.1.0-beta
+    image: ghcr.io/sunilsankar/webhook-async:v1.2.0-beta
     restart: unless-stopped
     command: [&quot;server&quot;, &quot;--config&quot;, &quot;/config/config.toml&quot;, &quot;--async&quot;]
     ports:
@@ -293,7 +293,7 @@ services:
       - webhook-net
 
   webhook-worker:
-    image: ghcr.io/sunilsankar/webhook-async:v0.1.0-beta
+    image: ghcr.io/sunilsankar/webhook-async:v1.2.0-beta
     restart: unless-stopped
     command: [&quot;worker&quot;, &quot;--config&quot;, &quot;/config/config.toml&quot;]
     environment:
@@ -375,7 +375,7 @@ spec:
     spec:
       containers:
         - name: receiver
-          image: ghcr.io/sunilsankar/webhook-async:v0.1.0-beta
+          image: ghcr.io/sunilsankar/webhook-async:v1.2.0-beta
           args: [&quot;server&quot;, &quot;--config&quot;, &quot;/etc/webhook/config.toml&quot;, &quot;--async&quot;]
           ports:
             - containerPort: 9000
@@ -420,7 +420,7 @@ spec:
 <hr />
 <h2 id="macos-launchd">macOS (launchd)<a class="headerlink" href="#macos-launchd" title="Permanent link">&para;</a></h2>
 <h3 id="1-install-binary">1. Install Binary<a class="headerlink" href="#1-install-binary" title="Permanent link">&para;</a></h3>
-<pre><code class="language-bash">curl -L -o /usr/local/bin/webhook-async https://github.com/sunilsankar/webhook-async/releases/download/v0.1.0-beta/webhook-async-macos-arm64
+<pre><code class="language-bash">curl -L -o /usr/local/bin/webhook-async https://github.com/sunilsankar/webhook-async/releases/download/v1.2.0-beta/webhook-async-macos-arm64
 chmod +x /usr/local/bin/webhook-async
 </code></pre>
 <h3 id="2-create-launchd-agent-librarylaunchagentscomsunilsankarwebhook-asyncplist">2. Create launchd Agent (<code>~/Library/LaunchAgents/com.sunilsankar.webhook-async.plist</code>)<a class="headerlink" href="#2-create-launchd-agent-librarylaunchagentscomsunilsankarwebhook-asyncplist" title="Permanent link">&para;</a></h3>
