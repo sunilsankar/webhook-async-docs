@@ -1,8 +1,12 @@
+---
+title: Introduction
+layout: home
+permalink: /
+---
+
 # Webhook-Async Documentation
 
 > **A standalone Rust webhook receiver and asynchronous job engine.**
-
-[**Deployment Guide**](deployment.html) • [**Configuration Reference**](configuration.html) • [**API Reference**](api.html) • [**Operations & Backups**](operations.html) • [**Security**](security.html) • [**Troubleshooting**](troubleshooting.html) • [**GitHub Repository**](https://github.com/sunilsankar/webhook-async)
 
 ---
 

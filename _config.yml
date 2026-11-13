@@ -1,18 +1,41 @@
-title: Webhook-Async Documentation
-description: Standalone Rust webhook receiver and asynchronous job engine
-theme: jekyll-theme-cayman
-show_downloads: true
-github:
-  repository_url: https://github.com/sunilsankar/webhook-async
-  is_project_page: true
-google_analytics:
+title: webhook-async
+description: Standalone Rust webhook receiver, async job engine, and admin dashboard
+author: Sunil Sankar
+url: "https://sunilsankar.github.io"
+baseurl: "/webhook-async-docs"
 
-# Navigation
-header_pages:
-  - index.md
-  - deployment.md
-  - configuration.md
-  - api.md
-  - operations.md
-  - security.md
-  - troubleshooting.md
+remote_theme: sighingnow/jekyll-gitbook
+permalink: /:categories/:year-:month-:day-:title:output_ext
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+
+plugins:
+  - jekyll-remote-theme
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# GitBook theme configuration
+gitbook:
+  toc:
+    enabled: true
+  search:
+    enabled: true
+
+syntax_highlighter_style: colorful
+
+header_links:
+  GitHub: "https://github.com/sunilsankar/webhook-async"
+  Releases: "https://github.com/sunilsankar/webhook-async/releases"
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - .github
+  - README.md

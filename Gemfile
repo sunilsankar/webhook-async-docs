@@ -1,4 +1,9 @@
 source "https://rubygems.org"
 
 gem "jekyll", "~> 4.3"
-gem "jekyll-theme-cayman"
+gem "jekyll-remote-theme"
+gem "jekyll-feed"
+gem "jekyll-seo-tag"
+gem "jekyll-sitemap"
+gem "kramdown-parser-gfm"
+gem "webrick"

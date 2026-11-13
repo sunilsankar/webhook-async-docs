@@ -1,3 +1,8 @@
+---
+title: Troubleshooting & Logs
+layout: post
+---
+
 # Troubleshooting Matrix
 
 [← Back to Home](index.html) • [Deployment Guide](deployment.html) • [Configuration Reference](configuration.html) • [API Reference](api.html)

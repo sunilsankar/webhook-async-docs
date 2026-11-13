@@ -1,3 +1,8 @@
+---
+title: Operations & Backups
+layout: post
+---
+
 # Operations & Runbook
 
 [← Back to Home](index.html) • [Deployment Guide](deployment.html) • [Configuration Reference](configuration.html) • [API Reference](api.html)

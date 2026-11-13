@@ -1,3 +1,8 @@
+---
+title: Configuration Reference
+layout: post
+---
+
 # Configuration Reference
 
 [← Back to Home](index.html) • [Deployment Guide](deployment.html) • [API Reference](api.html) • [Operations](operations.html)

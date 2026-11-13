@@ -1,3 +1,8 @@
+---
+title: Deployment Guide
+layout: post
+---
+
 # Deployment Guide
 
 [← Back to Home](index.html) • [Configuration Reference](configuration.html) • [API Reference](api.html) • [Operations](operations.html)
